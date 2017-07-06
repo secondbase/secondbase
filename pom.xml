@@ -12,6 +12,7 @@
 
     <modules>
         <module>flags</module>
+        <module>example</module>
     </modules>
 
     <build>
