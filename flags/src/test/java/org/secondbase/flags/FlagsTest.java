@@ -494,23 +494,4 @@ public class FlagsTest {
         expectedException.expectCause(isA(UnsupportedOperationException.class));
         new Flags().loadOpts(invalidMethod).parse(new String[0]);
     }
-
-    @Test
-    public void secretPaths() {
-        final Flags flags = new Flags();
-
-        final SecretPath s3Path = flags.getS3Path("s3flag:bucket/path/to/file");
-        assertThat(s3Path.getPath(), is("bucket"));
-        assertThat(s3Path.getKey(), is("path/to/file"));
-
-        assertNull(flags.getS3Path("wrongprefix:bucket/path/to/file"));
-        assertNull(flags.getS3Path("s3flag:onlybucket"));
-
-        final SecretPath vaultPath = flags.getVaultPath("vaultflag:path/to:value");
-        assertThat(vaultPath.getPath(), is("path/to"));
-        assertThat(vaultPath.getKey(), is("value"));
-
-        assertNull(flags.getVaultPath("wrongprefix:path/to:value"));
-        assertNull(flags.getVaultPath("vaultflag:path/without/value"));
-    }
 }

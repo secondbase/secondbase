@@ -2,7 +2,9 @@ package org.secondbase.flags;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
@@ -71,7 +73,7 @@ public class Flags {
 
     private VaultConfig vaultConfig;
     private AWSCredentialsProvider awsCredentialsProvider;
-    private AWSCredentials awsCredentials;
+    private AmazonS3 amazonS3;
 
     /**
      * The supported field types. Determined in fieldTypeOf(Field field).
@@ -525,17 +527,6 @@ public class Flags {
     }
 
     /**
-     * Set a custom client config for connecting to AWS S3. Will attempt to use credentials in
-     * ~/.aws/credentials (or legacy ~/.aws/config) if not set.
-     *
-     * @param awsCredentials the custom s3 client configuration
-     */
-    public Flags setS3Credentials(final AWSCredentials awsCredentials) {
-        this.awsCredentials = awsCredentials;
-        return this;
-    }
-
-    /**
      * Attempt to fetch a secret from S3.
      *
      * @param s3path where to fetch it from
@@ -545,13 +536,11 @@ public class Flags {
      */
     private Object getS3Value(final SecretPath s3path) throws IOException, AmazonS3Exception {
         LOG.log(Level.INFO, "Fetching secret from S3");
-        final AmazonS3Client s3Client;
+        final AmazonS3 s3Client;
         if (awsCredentialsProvider != null) {
-            s3Client = new AmazonS3Client(awsCredentialsProvider);
-        } else if (awsCredentials != null) {
-            s3Client = new AmazonS3Client(awsCredentials);
+            s3Client = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
         } else {
-            s3Client = new AmazonS3Client();
+            s3Client = AmazonS3ClientBuilder.standard().build();
         }
         final S3Object s3object
                 = s3Client.getObject(new GetObjectRequest(s3path.getPath(), s3path.getKey()));
@@ -568,14 +557,14 @@ public class Flags {
     }
 
     /**
-     * Returns S3 path based on the syntax: s3flag:bucket/path/to/file
+     * Returns S3 path based on the syntax: secret:s3://bucket/path/to/file
      */
     protected SecretPath getS3Path(final Object value) {
         if (value == null) {
             return null;
         }
         final String path = value.toString();
-        final Pattern p = Pattern.compile("(s3flag:)([a-z-_]*)(\\/)(.*)");
+        final Pattern p = Pattern.compile("(secret:s3:\\/\\/)([a-z-_]*)(\\/)(.*)");
         final Matcher m = p.matcher(path);
         if (! m.matches())
             return null;
