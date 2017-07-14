@@ -11,42 +11,62 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * Integration test for secret fetching from AWS S3.
  *
+ * Requires environment variables:
+ *
+ * AWS_PROFILE - The aws profile containing access credentials to S3
+ * AWS_S3_BUCKET - The bucket used for testing
+ * AWS_S3_KEY_PREFIX - The prefix for keys stored (in the bucket chosen)
+ * AWS_S3_CREATE_BUCKET - Set to "true" if the test should create the bucket if it does not exist
+ *                        (optional, default="false")
+ *
  * @author acidmoose
  */
 public class SecretS3IT {
 
-    private final String awsProfile = "comoyo";
-    private final String bucket = "comoyo-test";
-    private final String subfolder = "secondbasetesting";
-    private final boolean createTestBucketAndFolders = false;
-
     // The path for the tests. Includes UUID. Use for individual tests.
     private String s3path;
-    private AmazonS3 s3Client = null;
+    private String bucket;
+    private AmazonS3 s3Client;
     private Flags flags;
     private List<String> secrets = new ArrayList<>();
 
     @Flag(name="teststring")
     private static String testString;
 
+    @BeforeClass
+    public static void verifyEnv() {
+        verifyEnvironmentVariable("AWS_PROFILE");
+        verifyEnvironmentVariable("AWS_S3_BUCKET");
+        verifyEnvironmentVariable("AWS_S3_KEY_PREFIX");
+    }
+
+    private static void verifyEnvironmentVariable(final String variable) {
+        if (System.getenv(variable) == null) {
+            throw new IllegalStateException(variable + " not found in environment variables.");
+        }
+    }
+
     @Before
     public void setup() {
         final ProfileCredentialsProvider credentialsProvider
-                = new ProfileCredentialsProvider(awsProfile);
+                = new ProfileCredentialsProvider(System.getenv("AWS_PROFILE"));
         s3Client = AmazonS3ClientBuilder.standard().withCredentials(credentialsProvider).build();
+        bucket = System.getenv("AWS_S3_BUCKET");
         if (! s3Client.doesBucketExist(bucket)) {
-            if (! createTestBucketAndFolders) {
+            if (System.getenv("AWS_S3_CREATE_BUCKET") == null
+                    || ! Boolean.parseBoolean(System.getenv("AWS_S3_CREATE_BUCKET"))) {
                 throw new IllegalStateException("Bucket does not exist and not allowed to create.");
             }
             s3Client.createBucket(bucket);
         }
         final String testUUID = UUID.randomUUID().toString();
-        s3path = subfolder + "/" + testUUID;
+        s3path = System.getenv("AWS_S3_KEY_PREFIX") + "/" + testUUID;
 
         flags = new Flags();
         flags.loadOpts(this.getClass());
