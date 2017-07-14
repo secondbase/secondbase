@@ -564,11 +564,11 @@ public class Flags {
             return null;
         }
         final String path = value.toString();
-        final Pattern p = Pattern.compile("(secret:s3:\\/\\/)([a-z-_]*)(\\/)(.*)");
+        final Pattern p = Pattern.compile("secret:s3:\\/\\/([a-z-_]*)\\/(.*)");
         final Matcher m = p.matcher(path);
         if (! m.matches())
             return null;
-        return new SecretPath(m.group(2), m.group(4));
+        return new SecretPath(m.group(1), m.group(2));
     }
 
     /**
