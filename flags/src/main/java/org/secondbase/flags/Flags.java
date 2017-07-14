@@ -591,18 +591,18 @@ public class Flags {
     }
 
     /**
-     * Returns vault path and key based on the syntax: vaultflag:path:key
+     * Returns vault path and key based on the syntax: secret:vault:path/to/data:key
      */
     protected SecretPath getVaultPath(final Object value) {
         if (value == null) {
             return null;
         }
         final String path = value.toString();
-        final Pattern p = Pattern.compile("(vaultflag:)(.*)(:)(.*)");
+        final Pattern p = Pattern.compile("secret:vault:(.*):(.*)");
         final Matcher m = p.matcher(path);
         if (! m.matches())
             return null;
-        return new SecretPath(m.group(2), m.group(4));
+        return new SecretPath(m.group(1), m.group(2));
     }
 
     /**

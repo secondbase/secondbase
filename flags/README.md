@@ -88,7 +88,7 @@ Flags support fetching secrets or config on load. Currently supports HashiCorp V
 NB! Secrets only work with String variables.
 
 ```
---mySecretVariableFromVault secret:vault://secret/foo:value
+--mySecretVariableFromVault secret:vault:secret/foo:secretkey
 --mySecretVariableFromS3 secret:s3://bucket/foo/secret
 ```
 
@@ -110,7 +110,7 @@ value               Vault
 
 To make Flags find the value "Vault" and print "Hello, Vault!", start the example program like this:
 
-**java HelloFlags --text "vault://secret/foo:value"**
+**java HelloFlags --text "secret:vault:secret/foo:value"**
 
 # Secret support - AWS S3
 
