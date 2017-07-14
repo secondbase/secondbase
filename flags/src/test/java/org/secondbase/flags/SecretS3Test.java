@@ -8,17 +8,27 @@ import org.junit.Test;
  * @author acidmoose
  */
 public class SecretS3Test {
-    private final String bucket = "testbucket";
-    private final String subfolder = "testfolder";
 
     @Test
     public void getS3Path() throws Exception {
+        final String bucket = "testbucket";
+        final String subfolder = "testfolder";
+        final String subfolderWithSubPaths = "testfolder/subfolder/subsubfolder";
         final String secret = "secret";
-        final SecretPath s3Path = new Flags().getS3Path(
-                "secret:s3://" + bucket + "/" + subfolder + "/" + secret);
-        assertNotNull(s3Path);
-        assertEquals(subfolder + "/" + secret, s3Path.getKey());
-        assertEquals(bucket, s3Path.getPath());
+        {
+            final SecretPath s3Path = new Flags().getS3Path(
+                    "secret:s3://" + bucket + "/" + subfolder + "/" + secret);
+            assertNotNull(s3Path);
+            assertEquals(subfolder + "/" + secret, s3Path.getKey());
+            assertEquals(bucket, s3Path.getPath());
+        }
+        {
+            final SecretPath s3Path = new Flags().getS3Path(
+                    "secret:s3://" + bucket + "/" + subfolderWithSubPaths + "/" + secret);
+            assertNotNull(s3Path);
+            assertEquals(subfolderWithSubPaths + "/" + secret, s3Path.getKey());
+            assertEquals(bucket, s3Path.getPath());
+        }
 
         // Invalid flagged secrets or non-secret variables
         assertNull(new Flags().getS3Path(""));

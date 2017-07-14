@@ -80,15 +80,6 @@ public class SecretS3IT {
                 "secret:s3://" + bucket + "/" + s3path + "/nonExistingSecretFile"});
     }
 
-    @Test
-    public void s3PathNotSecretPath() {
-        flags.parse(new String[]{
-                "--teststring",
-                "s3://" + bucket + "/" + s3path + "/nonExistingSecretFile"});
-        // Make sure we're not trying to get a secret, but treat it as a regular String
-        assertEquals("s3://" + bucket + "/" + s3path + "/nonExistingSecretFile", testString);
-    }
-
     // put a secret in s3 and store for later so we can clean up
     private void putSecret(final String key, final String value) {
         s3Client.putObject(bucket, key, value);
