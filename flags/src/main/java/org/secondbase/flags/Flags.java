@@ -1,20 +1,10 @@
 package org.secondbase.flags;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -30,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +30,7 @@ import javax.annotation.PostConstruct;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.secondbase.secrets.SecretHandler;
 
 
 /**
@@ -72,8 +64,6 @@ public class Flags {
     private static final Logger LOG = Logger.getLogger(Flags.class.getName());
 
     private VaultConfig vaultConfig;
-    private AWSCredentialsProvider awsCredentialsProvider;
-    private AmazonS3 amazonS3;
 
     /**
      * The supported field types. Determined in fieldTypeOf(Field field).
@@ -114,6 +104,9 @@ public class Flags {
     private final List<Object> objects = new ArrayList<Object>();
     private final List<Class<?>> classes = new ArrayList<Class<?>>();
 
+    // Dynamically load secret handlers to avoid unwanted dependencies
+    private final ServiceLoader<SecretHandler> secretHandlers
+            = ServiceLoader.load(SecretHandler.class);
 
     /**
      * Load a class that contains Flag annotations.
@@ -363,13 +356,26 @@ public class Flags {
     }
 
     /**
+     * Pass args through secret handling.
+     * @param args - Arguments passed from main method.
+     * @return this
+     */
+    public String[] fetchSecrets(final String[] args) {
+        String[] ret = args;
+        for (final SecretHandler secretHandler : secretHandlers) {
+            ret = secretHandler.fetch(ret);
+        }
+        return ret;
+    }
+
+    /**
      * Try to set the arguments from main method on the fields loaded by loadOpts(Class<?> c).
      *
      * @param args - Arguments passed from main method.
      * @return this
      */
     public Flags parse(final String[] args) {
-        optionSet = optionParser.parse(args);
+        optionSet = optionParser.parse(fetchSecrets(args));
 
         //Store non option arguments
         nonOptionArguments = optionSet.nonOptionArguments();
@@ -428,14 +434,6 @@ public class Flags {
                             value = getVaultSecret(vaultPath);
                         } catch (final VaultException e) {
                             throw new RuntimeException("Could not fetch value from Vault: " + value, e);
-                        }
-                    }
-                    final SecretPath s3path = getS3Path(value);
-                    if (s3path != null) {
-                        try {
-                            value = getS3Value(s3path);
-                        } catch (final IOException e) {
-                            throw new RuntimeException("Could not fetch value from S3: " + value, e);
                         }
                     }
                     switch(holder.getType()) {
@@ -513,62 +511,6 @@ public class Flags {
                     e);
         }
         return this;
-    }
-
-    /**
-     * Set a custom client config for connecting to AWS S3. Will attempt to use credentials in
-     * ~/.aws/credentials (or legacy ~/.aws/config) if not set.
-     *
-     * @param awsCredentialsProvider the custom s3 client configuration
-     */
-    public Flags setS3CredentialsProvider(final AWSCredentialsProvider awsCredentialsProvider) {
-        this.awsCredentialsProvider = awsCredentialsProvider;
-        return this;
-    }
-
-    /**
-     * Attempt to fetch a secret from S3.
-     *
-     * @param s3path where to fetch it from
-     * @return the content of the file found on S3
-     * @throws IOException on problems streaming the content of the file
-     * @throws AmazonS3Exception on problems communicating with amazon
-     */
-    private Object getS3Value(final SecretPath s3path) throws IOException, AmazonS3Exception {
-        LOG.log(Level.INFO, "Fetching secret from S3");
-        final AmazonS3 s3Client;
-        if (awsCredentialsProvider != null) {
-            s3Client = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
-        } else {
-            s3Client = AmazonS3ClientBuilder.standard().build();
-        }
-        final S3Object s3object
-                = s3Client.getObject(new GetObjectRequest(s3path.getPath(), s3path.getKey()));
-        final BufferedReader reader
-                = new BufferedReader(new InputStreamReader(s3object.getObjectContent()));
-        final StringBuilder b = new StringBuilder();
-        String line;
-        while((line = reader.readLine()) != null) {
-            b.append(line);
-        }
-        LOG.log(Level.INFO, "Found secret");
-        reader.close();
-        return b.toString();
-    }
-
-    /**
-     * Returns S3 path based on the syntax: secret:s3://bucket/path/to/file
-     */
-    protected SecretPath getS3Path(final Object value) {
-        if (value == null) {
-            return null;
-        }
-        final String path = value.toString();
-        final Pattern p = Pattern.compile("secret:s3:\\/\\/([a-z-_]*)\\/(.*)");
-        final Matcher m = p.matcher(path);
-        if (! m.matches())
-            return null;
-        return new SecretPath(m.group(1), m.group(2));
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.secondbase.flags;
+package org.secondbase.secrets.s3;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,13 +31,10 @@ public class SecretS3IT {
 
     // The path for the tests. Includes UUID. Use for individual tests.
     private String s3path;
-    private String bucket;
-    private AmazonS3 s3Client;
-    private Flags flags;
+    private static String bucket;
+    private static AmazonS3 s3Client;
     private List<String> secrets = new ArrayList<>();
-
-    @Flag(name="teststring")
-    private static String testString;
+    private static S3SecretHandler secretHandler;
 
     @BeforeClass
     public static void verifyEnv() {
@@ -52,25 +49,27 @@ public class SecretS3IT {
         }
     }
 
-    @Before
-    public void setup() {
+    @BeforeClass
+    public static void setupS3() {
         final ProfileCredentialsProvider credentialsProvider
                 = new ProfileCredentialsProvider(System.getenv("AWS_PROFILE"));
         s3Client = AmazonS3ClientBuilder.standard().withCredentials(credentialsProvider).build();
         bucket = System.getenv("AWS_S3_BUCKET");
         if (! s3Client.doesBucketExist(bucket)) {
             if (System.getenv("AWS_S3_CREATE_BUCKET") == null
-                    || ! Boolean.parseBoolean(System.getenv("AWS_S3_CREATE_BUCKET"))) {
+                    || !Boolean.parseBoolean(System.getenv("AWS_S3_CREATE_BUCKET"))) {
                 throw new IllegalStateException("Bucket does not exist and not allowed to create.");
             }
             s3Client.createBucket(bucket);
         }
+        S3SecretHandler.setS3CredentialsProvider(credentialsProvider);
+        secretHandler = new S3SecretHandler();
+    }
+
+    @Before
+    public void setup() {
         final String testUUID = UUID.randomUUID().toString();
         s3path = System.getenv("AWS_S3_KEY_PREFIX") + "/" + testUUID;
-
-        flags = new Flags();
-        flags.loadOpts(this.getClass());
-        flags.setS3CredentialsProvider(credentialsProvider);
     }
 
     @After
@@ -87,17 +86,18 @@ public class SecretS3IT {
         final String secretStringValue = "secretValue";
         putSecret(s3path + "/" + secretStringFile, secretStringValue);
 
-        flags.parse(new String[]{
-                "--teststring",
-                "secret:s3://" + bucket + "/" + s3path + "/" + secretStringFile});
-        assertEquals(secretStringValue, testString);
+        assertEquals(
+                secretStringValue,
+                secretHandler.fetch(new String[]{
+                        "--teststring",
+                        "secret:s3:" + bucket + ":" + s3path + "/" + secretStringFile})[1]);
     }
 
     @Test(expected = AmazonS3Exception.class)
     public void secretNotFound() {
-        flags.parse(new String[]{
+        secretHandler.fetch(new String[]{
                 "--teststring",
-                "secret:s3://" + bucket + "/" + s3path + "/nonExistingSecretFile"});
+                "secret:s3:" + bucket + ":" + s3path + "/nonExistingSecretFile"});
     }
 
     // put a secret in s3 and store for later so we can clean up

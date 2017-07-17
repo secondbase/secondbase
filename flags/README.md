@@ -85,11 +85,9 @@ Flags support both public and private variables.
 
 Flags support fetching secrets or config on load. Currently supports HashiCorp Vault and Amazon S3.
 
-NB! Secrets only work with String variables.
-
 ```
 --mySecretVariableFromVault secret:vault:secret/foo:secretkey
---mySecretVariableFromS3 secret:s3://bucket/foo/secret
+--mySecretVariableFromS3 secret:s3:bucket:key
 ```
 
 By appending "secret:" before the path, flags will attempt to get the value for the variable from
@@ -124,4 +122,4 @@ Lets say we create a file called "helloflags-secret", containing only the word "
 
 To make Flags find the value "S3" and print "Hello, S3!", start the example progam like this:
 
-**java HelloFlags --text "secret:s3://helloflags-bucket/somesubfolder/helloflags-secret"**
+**java HelloFlags --text "secret:s3:helloflags-bucket:somesubfolder/helloflags-secret"**
