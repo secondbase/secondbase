@@ -1,4 +1,4 @@
-package org.secondbase.flags;
+package org.secondbase.secrets.vault;
 
 import static org.junit.Assert.*;
 
@@ -22,23 +22,13 @@ import org.junit.Test;
 public class SecretVaultIT {
     private Vault vault;
     private String testFolder;
-    private Flags flags;
-    private TestClass testClass;
-
-    private class TestClass {
-        @Flag(name="teststring")
-        String testString;
-    }
 
     @Before
     public void setup() throws VaultException {
         final VaultConfig vaultConfig = new VaultConfig().build();
         vault = new Vault(vaultConfig);
         testFolder = UUID.randomUUID().toString();
-        testClass = new TestClass();
-        flags = new Flags()
-                .setVaultConfig(vaultConfig)
-                .loadOpts(testClass);
+        VaultSecretHandler.setVaultConfig(vaultConfig);
     }
 
     @Test
@@ -55,15 +45,23 @@ public class SecretVaultIT {
         secrets.put(anotherSecretKey, anotherSecret);
         vault.logical().write(path, secrets);
 
-        flags.parse(new String[]{
+        assertEquals(
+                secret,
+                new VaultSecretHandler().fetch(new String[]{
+                        "--teststring",
+                        "secret:vault:" + path + ":" + secretKey})[1]);
+
+        final String[] twoSecrets = new String[]{
                 "--teststring",
-                "secret:vault:" + path + ":" + secretKey
-        });
-        assertEquals(secret, testClass.testString);
-        flags.parse(new String[]{
-                "--teststring",
+                "secret:vault:" + path + ":" + secretKey,
+                "--teststring2",
                 "secret:vault:" + path + ":" + anotherSecretKey
-        });
-        assertEquals(anotherSecret, testClass.testString);
+        };
+        assertEquals(
+                secret,
+                new VaultSecretHandler().fetch(twoSecrets)[1]);
+        assertEquals(
+                anotherSecret,
+                new VaultSecretHandler().fetch(twoSecrets)[3]);
     }
 }

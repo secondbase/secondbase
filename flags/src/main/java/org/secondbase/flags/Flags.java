@@ -1,8 +1,5 @@
 package org.secondbase.flags;
 
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.VaultConfig;
-import com.bettercloud.vault.VaultException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,10 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -62,8 +56,6 @@ import org.secondbase.secrets.SecretHandler;
 public class Flags {
 
     private static final Logger LOG = Logger.getLogger(Flags.class.getName());
-
-    private VaultConfig vaultConfig;
 
     /**
      * The supported field types. Determined in fieldTypeOf(Field field).
@@ -428,14 +420,6 @@ public class Flags {
                 // Deal with the flags that were given on the command line.
                 if (optionSet.has(optionSpec)) {
                     Object value = optionSet.valueOf(optionSpec);
-                    final SecretPath vaultPath = getVaultPath(value);
-                    if (vaultPath != null) {
-                        try {
-                            value = getVaultSecret(vaultPath);
-                        } catch (final VaultException e) {
-                            throw new RuntimeException("Could not fetch value from Vault: " + value, e);
-                        }
-                    }
                     switch(holder.getType()) {
                         case INTEGER:
                             if (holder.isInstanced()) {
@@ -511,59 +495,6 @@ public class Flags {
                     e);
         }
         return this;
-    }
-
-    /**
-     * Provide a custom config for Vault. If not provided, vault will attempt to find these values
-     * from system environment:
-     *
-     * VAULT_ADDR
-     * VAULT_TOKEN
-     * VAULT_OPEN_TIMEOUT
-     * VAULT_READ_TIMEOUT
-     * VAULT_SSL_CERT
-     * VAULT_SSL_VERIFY
-     *
-     * @link: https://github.com/BetterCloud/vault-java-driver
-     * @param vaultConfig custom vault configuration
-     */
-    public Flags setVaultConfig(final VaultConfig vaultConfig) {
-        this.vaultConfig = vaultConfig;
-        return this;
-    }
-
-    /**
-     * Returns vault path and key based on the syntax: secret:vault:path/to/data:key
-     */
-    protected SecretPath getVaultPath(final Object value) {
-        if (value == null) {
-            return null;
-        }
-        final String path = value.toString();
-        final Pattern p = Pattern.compile("secret:vault:(.*):(.*)");
-        final Matcher m = p.matcher(path);
-        if (! m.matches())
-            return null;
-        return new SecretPath(m.group(1), m.group(2));
-    }
-
-    /**
-     * Get a value from vault based on a VaultPath
-     *
-     * @param vaultPath the details of where to find the value
-     * @return the value found in vault
-     * @throws VaultException if there were problems getting the value
-     */
-    private Object getVaultSecret(final SecretPath vaultPath) throws VaultException {
-        LOG.log(Level.INFO, "Fetching secret from Vault");
-        final Vault vault = new Vault((vaultConfig == null) ? new VaultConfig().build() : vaultConfig);
-        final String secret = vault
-                .logical()
-                .read(vaultPath.getPath())
-                .getData()
-                .get(vaultPath.getKey());
-        LOG.log(Level.INFO, "Found secret");
-        return secret;
     }
 
     /**

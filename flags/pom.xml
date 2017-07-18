@@ -21,11 +21,6 @@
             <artifactId>jopt-simple</artifactId>
             <version>5.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.bettercloud</groupId>
-            <artifactId>vault-java-driver</artifactId>
-            <version>1.2.0</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
