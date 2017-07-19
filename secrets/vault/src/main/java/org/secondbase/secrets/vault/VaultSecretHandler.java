@@ -14,7 +14,7 @@ import org.secondbase.secrets.SecretHandlerException;
 /**
  * Exchanges args on format secret:vault:path/to/data:key with content from vault.
  */
-public class VaultSecretHandler implements SecretHandler {
+public final class VaultSecretHandler implements SecretHandler {
 
     private static final Logger LOG = Logger.getLogger(VaultSecretHandler.class.getName());
     private static VaultConfig vaultConfig;

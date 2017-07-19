@@ -6,7 +6,7 @@ package org.secondbase.flags;
  * @author acidmoose
  *
  */
-public class FlagsInstanced {
+public final class FlagsInstanced {
     @Flag(name="string", description="String test")
     public String string = "NA";
 

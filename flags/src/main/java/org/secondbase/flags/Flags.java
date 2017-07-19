@@ -53,7 +53,7 @@ import org.secondbase.secrets.SecretHandler;
  * @author acidmoose
  *
  */
-public class Flags {
+public final class Flags {
 
     private static final Logger LOG = Logger.getLogger(Flags.class.getName());
 
@@ -83,7 +83,7 @@ public class Flags {
     private String versionString = "NA";
 
     // Helper list for loaded options.
-    private final Map<String, OptionHolder> options = new HashMap<String, OptionHolder>();
+    private final Map<String, OptionHolder> options = new HashMap<>();
 
     // OptionSet used by option parser implementation
     private OptionSet optionSet;
@@ -91,10 +91,10 @@ public class Flags {
     private List<?> nonOptionArguments;
 
     // Helper map to store enum options.
-    private final Map<Class<? extends Enum<?>>, List<String>> enumOptions = new HashMap<Class<? extends Enum<?>>, List<String>>();
+    private final Map<Class<? extends Enum<?>>, List<String>> enumOptions = new HashMap<>();
 
-    private final List<Object> objects = new ArrayList<Object>();
-    private final List<Class<?>> classes = new ArrayList<Class<?>>();
+    private final List<Object> objects = new ArrayList<>();
+    private final List<Class<?>> classes = new ArrayList<>();
 
     // Dynamically load secret handlers to avoid unwanted dependencies
     private final ServiceLoader<SecretHandler> secretHandlers
@@ -295,7 +295,7 @@ public class Flags {
     private void addEnumOption(final Class<? extends Enum<?>> enumClass, final String validOption) {
         List<String> optionsForClass = enumOptions.get(enumClass);
         if (optionsForClass == null) {
-            optionsForClass = new ArrayList<String>();
+            optionsForClass = new ArrayList<>();
         }
         optionsForClass.add(validOption);
         enumOptions.put(enumClass, optionsForClass);
@@ -384,7 +384,7 @@ public class Flags {
         }
         if (propertiesFlagged()) {
             final List<String> files = optionSet.valuesOf(PROPERTIES_FILE);
-            final ArrayList<String> newArgs = new ArrayList<String>();
+            final ArrayList<String> newArgs = new ArrayList<>();
             for (final String filename : files) {
                 final Properties props = new Properties();
                 try {
@@ -521,7 +521,7 @@ public class Flags {
     }
 
     private List<Method> findPostConstructMethod(final Class<?> type, final boolean instanced) {
-        final List<Method> result = new ArrayList<Method>();
+        final List<Method> result = new ArrayList<>();
         for (final Method method : type.getDeclaredMethods()) {
             if (method.getAnnotation(PostConstruct.class) != null) {
                 final boolean isStatic = Modifier.isStatic(method.getModifiers());
@@ -553,7 +553,7 @@ public class Flags {
     public void printHelp(final OutputStream out) {
         final PrintWriter w = new PrintWriter(out);
 
-        final Map<String, List<OptionHolder>> holdersByClass = new TreeMap<String, List<OptionHolder>>();
+        final Map<String, List<OptionHolder>> holdersByClass = new TreeMap<>();
 
         // Iterate over all the options we have gathered and stash them by class.
         for (final OptionHolder holder : options.values()) {
@@ -567,7 +567,7 @@ public class Flags {
             List<OptionHolder> holderList = holdersByClass.get(className);
             if (null == holderList) {
                 // The list did not exist.  Create it.
-                holderList = new LinkedList<OptionHolder>();
+                holderList = new LinkedList<>();
                 holdersByClass.put(className, holderList);
             }
 
@@ -582,6 +582,7 @@ public class Flags {
             // Sort the options. In Java, sorting collections is worse
             // than watching Pandas fuck.
             Collections.sort(holderList, new Comparator<OptionHolder>() {
+                @Override
                 public int compare(OptionHolder a, OptionHolder b) {
                     return a.getFlag().name().toLowerCase().compareTo(b.getFlag().name().toLowerCase());
                 }
@@ -718,7 +719,7 @@ public class Flags {
      * @return List containing Flag instances.
      */
     public List<Flag> getFlagsAsList() {
-        final List<Flag> list = new ArrayList<Flag>();
+        final List<Flag> list = new ArrayList<>();
         for(final OptionHolder holder : options.values()) {
             list.add(holder.getFlag());
         }

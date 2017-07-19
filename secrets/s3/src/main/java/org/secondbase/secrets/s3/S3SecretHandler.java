@@ -20,7 +20,7 @@ import org.secondbase.secrets.SecretHandlerException;
 /**
  * Exchanges args on format secret:s3:bucket:key with the content of s3 url.
  */
-public class S3SecretHandler implements SecretHandler {
+public final class S3SecretHandler implements SecretHandler {
 
     private static final Logger LOG = Logger.getLogger(S3SecretHandler.class.getName());
     private static AWSCredentialsProvider awsCredentialsProvider;

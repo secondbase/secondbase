@@ -3,7 +3,7 @@ package org.secondbase.example.main;
 import org.secondbase.flags.Flag;
 import org.secondbase.flags.Flags;
 
-public class HelloFlags {
+public final class HelloFlags {
 
 	@Flag(name = "int")
 	private static int integer = 1;
