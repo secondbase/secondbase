@@ -4,7 +4,8 @@ import org.secondbase.core.SecondBase;
 import org.secondbase.flags.Flag;
 import org.secondbase.flags.Flags;
 
-public class HelloSecondBase {
+public final class HelloSecondBase {
+
     @Flag(name = "var")
     private String variable = "";
 
