@@ -8,7 +8,6 @@ import org.secondbase.flags.Flags;
  */
 public class SecondBase {
 
-    private static final Logger LOG = Logger.getLogger(SecondBase.class.getName());
     private Flags flags;
 
     /**
