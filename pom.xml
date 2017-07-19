@@ -11,6 +11,7 @@
     <name>Secondbase parent project</name>
 
     <modules>
+        <module>core</module>
         <module>flags</module>
         <module>example</module>
         <module>secrets</module>

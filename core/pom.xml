@@ -9,19 +9,19 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>example</artifactId>
+    <artifactId>core</artifactId>
     <packaging>jar</packaging>
-    <name>Example to show how to use secondbase components</name>
+    <name>core</name>
     <dependencies>
         <dependency>
             <groupId>org.secondbase</groupId>
             <artifactId>flags</artifactId>
-            <version>${parent.version}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.secondbase</groupId>
-            <artifactId>core</artifactId>
-            <version>${parent.version}</version>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.1.0</version>
         </dependency>
     </dependencies>
 </project>
