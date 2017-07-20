@@ -15,6 +15,7 @@
         <module>flags</module>
         <module>example</module>
         <module>secrets</module>
+        <module>webconsole</module>
     </modules>
 
     <build>

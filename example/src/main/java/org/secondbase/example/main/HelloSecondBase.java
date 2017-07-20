@@ -1,6 +1,7 @@
 package org.secondbase.example.main;
 
 import org.secondbase.core.SecondBase;
+import org.secondbase.core.SecondBaseException;
 import org.secondbase.flags.Flag;
 import org.secondbase.flags.Flags;
 
@@ -13,7 +14,7 @@ public final class HelloSecondBase {
         System.out.println(variable);
     }
 
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws SecondBaseException {
         final HelloSecondBase helloSecondBase = new HelloSecondBase();
         new SecondBase(args, new Flags().loadOpts(helloSecondBase));
         helloSecondBase.printVariable();
