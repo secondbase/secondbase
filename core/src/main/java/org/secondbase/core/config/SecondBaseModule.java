@@ -3,12 +3,14 @@ package org.secondbase.core.config;
 import org.secondbase.core.SecondBase;
 
 /**
- * Implemented by SecondBase modules. Enables loading of Flags and setting active SecondBase
- * modules.
+ * Interface SecondBase modules must implement. Enables loading of Flags and
+ * setting active SecondBase modules.
  */
 public interface SecondBaseModule {
+
     /**
-     * Load a ConfigurableModule.
+     * Load a ConfigurableModule. Should load additional flags and handle other
+     * initialisation.
      */
     void load(final SecondBase secondBase);
 }

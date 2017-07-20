@@ -8,19 +8,19 @@ import java.io.IOException;
 public interface WebConsole {
     /**
      * Start the webconsole server.
-     * @throws IOException If there's trouble starting it.
+     * @throws IOException if there's trouble starting it
      */
     void start() throws IOException;
 
     /**
-     * Shutdown the webconsole server.
-     * @throws IOException If there's trouble starting it.
+     * Shut down the webconsole server.
+     * @throws IOException if there's trouble starting it
      */
     void shutdown() throws IOException;
 
     /**
      * Get the port the webconsole is running on.
-     * @return the webconsole port.
+     * @return the webconsole port
      */
     int getPort();
 }

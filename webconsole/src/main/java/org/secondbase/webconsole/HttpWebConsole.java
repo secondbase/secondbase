@@ -27,7 +27,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
      * Basic /healthz endpoint, returning 200 OK.
      */
     private final class HealthzHandler implements HttpHandler {
-        private final String healthyMsg = "Healthy";
+        private static final String healthyMsg = "Healthy";
 
         @Override
         public void handle(final HttpExchange t) throws IOException {
