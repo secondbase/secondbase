@@ -78,15 +78,11 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     @Override
     public void shutdown() throws IOException {
-        LOG.info("Shutting down webconsole.");
         if (! WebConsoleConfiguration.enableWebConsole) {
             return;
         }
-        final int USE_SYSTEM_DEFAULT_BACKLOG = 0;
-        server.bind(
-                new InetSocketAddress(port),
-                USE_SYSTEM_DEFAULT_BACKLOG);
-        server.start();
+        LOG.info("Shutting down webconsole.");
+        server.stop(WebConsoleConfiguration.stopTimeout);
     }
 
     @Override
