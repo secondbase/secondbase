@@ -1,7 +1,5 @@
 package org.secondbase.webconsole;
 
-import static org.secondbase.webconsole.WebConsoleConfiguration.port;
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -31,6 +29,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     private final class HealthzHandler implements HttpHandler {
         private final String healthyMsg = "Healthy";
 
+        @Override
         public void handle(final HttpExchange t) throws IOException {
             final byte [] response = healthyMsg.getBytes();
             t.sendResponseHeaders(200, response.length);
@@ -61,14 +60,14 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     @Override
     public void start() throws IOException {
-        if (port == 0) {
+        if (WebConsoleConfiguration.port == 0) {
             return;
         }
         final int useSystemDefaultBacklog = 0;
         server.bind(
-                new InetSocketAddress(port),
+                new InetSocketAddress(WebConsoleConfiguration.port),
                 useSystemDefaultBacklog);
-        LOG.info("Starting webconsole on port " + port);
+        LOG.info("Starting webconsole on port " + WebConsoleConfiguration.port);
         for (final Widget widget : widgets) {
             LOG.info("Adding webconsole widget " + widget.getPath());
             server.createContext(widget.getPath(), widget.getServlet());
@@ -87,7 +86,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     @Override
     public int getPort() {
-        return port;
+        return WebConsoleConfiguration.port;
     }
 
     /**
