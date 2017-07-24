@@ -40,7 +40,7 @@ public class SecretVaultIT {
         final String path = "secret/" + testFolder;
 
         // Put some secrets in vault first
-        final Map<String, String> secrets = new HashMap<>();
+        final Map<String, Object> secrets = new HashMap<>();
         secrets.put(secretKey, secret);
         secrets.put(anotherSecretKey, anotherSecret);
         vault.logical().write(path, secrets);
