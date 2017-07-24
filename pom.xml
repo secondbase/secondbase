@@ -16,6 +16,7 @@
         <module>example</module>
         <module>secrets</module>
         <module>webconsole</module>
+        <module>jsonlogging</module>
     </modules>
 
     <build>
@@ -58,6 +59,12 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>2.8.47</version>
+          <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

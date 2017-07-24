@@ -2,8 +2,6 @@ package org.secondbase.core;
 
 import java.io.IOException;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.secondbase.core.config.SecondBaseModule;
 import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.flags.Flags;
@@ -54,6 +52,10 @@ public class SecondBase {
             System.exit(0);
         }
 
+        for (final SecondBaseModule module : configurableModule) {
+            module.init();
+        }
+
         if (webConsole != null) {
             try {
                 webConsole.start();
@@ -64,6 +66,7 @@ public class SecondBase {
 
         // Shut down modules on kill command
         Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
             public void run() {
                 if (webConsole != null) {
                     try {

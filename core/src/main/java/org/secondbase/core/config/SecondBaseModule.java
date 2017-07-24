@@ -13,4 +13,10 @@ public interface SecondBaseModule {
      * initialisation.
      */
     void load(final SecondBase secondBase);
+
+    /**
+     * This method will be called after flags are parsed. Initialisation code
+     * that depends on supplied flags should go here.
+     */
+    void init();
 }

@@ -13,3 +13,4 @@ For now, it consists of the following components:
 * [flags](flags) for command line argument parsing and secret fetching
     * [s3-secrets](secrets/s3) dynamically fetch flags from Amazon S3
     * [vault-secrets](secrets/vault) dynamically fetch flags from HashiCorp Vault
+* [jsonlogging](jsonlogging) to wrap setting up json logging to stdout

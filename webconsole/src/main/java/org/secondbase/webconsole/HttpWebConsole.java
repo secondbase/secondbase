@@ -13,6 +13,8 @@ import org.secondbase.core.config.SecondBaseModule;
 import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.webconsole.widget.Widget;
 
+import static org.secondbase.webconsole.WebConsoleConfiguration.port;
+
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
  */
@@ -56,6 +58,11 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     public void load(final SecondBase secondBase) {
         secondBase.getFlags().loadOpts(WebConsoleConfiguration.class);
         secondBase.setWebConsole(this);
+    }
+
+    @Override
+    public void init() {
+        // nothing to initialise
     }
 
     @Override
