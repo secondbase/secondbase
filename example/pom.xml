@@ -11,7 +11,7 @@
 
     <artifactId>example</artifactId>
     <packaging>jar</packaging>
-    <name>Example to show how to use secondbase components</name>
+    <name>example project</name>
     <dependencies>
         <dependency>
             <groupId>org.secondbase</groupId>
