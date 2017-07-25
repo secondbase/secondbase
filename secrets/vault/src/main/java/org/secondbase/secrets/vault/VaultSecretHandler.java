@@ -4,19 +4,19 @@ import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.secondbase.secrets.SecretHandler;
 import org.secondbase.secrets.SecretHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Exchanges args on format secret:vault:path/to/data:key with content from vault.
  */
 public final class VaultSecretHandler implements SecretHandler {
 
-    private static final Logger LOG = Logger.getLogger(VaultSecretHandler.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(VaultSecretHandler.class);
     private static VaultConfig vaultConfig;
     private final Pattern p = Pattern.compile("(secret:vault:(.*):(.*))");
 
@@ -37,7 +37,7 @@ public final class VaultSecretHandler implements SecretHandler {
         for (int i = 0; i < args.length; i++) {
             final Optional<SecretPath> vaultPath = getVaultPath(args[i]);
             if (vaultPath.isPresent()) {
-                LOG.log(Level.INFO, "Secret recognised: " + args[i]);
+                LOG.info("Secret recognised: " + args[i]);
                 try {
                     ret[i] = args[i].replaceAll(
                             vaultPath.get().replaceString,
@@ -91,7 +91,7 @@ public final class VaultSecretHandler implements SecretHandler {
      * @throws VaultException if there were problems getting the value
      */
     private String getVaultSecret(final SecretPath vaultPath) throws VaultException {
-        LOG.log(Level.INFO, "Fetching secret from Vault");
+        LOG.info("Fetching secret from Vault");
         final Vault vault = new Vault(
                 (vaultConfig == null) ? new VaultConfig().build() : vaultConfig);
         final String secret = vault
@@ -99,7 +99,7 @@ public final class VaultSecretHandler implements SecretHandler {
                 .read(vaultPath.path)
                 .getData()
                 .get(vaultPath.value);
-        LOG.log(Level.INFO, "Found secret");
+        LOG.info("Found secret");
         return secret;
     }
 

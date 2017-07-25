@@ -7,19 +7,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.ServiceLoader;
-import java.util.logging.Logger;
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.SecondBaseException;
 import org.secondbase.core.config.SecondBaseModule;
 import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.webconsole.widget.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
  */
 public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
-    private static final Logger LOG = Logger.getLogger(HttpWebConsole.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(HttpWebConsole.class);
     private final HttpServer server;
 
     private final ServiceLoader<Widget> widgets = ServiceLoader.load(Widget.class);

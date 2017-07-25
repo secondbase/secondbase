@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -54,8 +53,6 @@ import org.secondbase.secrets.SecretHandler;
  *
  */
 public final class Flags {
-
-    private static final Logger LOG = Logger.getLogger(Flags.class.getName());
 
     /**
      * The supported field types. Determined in fieldTypeOf(Field field).

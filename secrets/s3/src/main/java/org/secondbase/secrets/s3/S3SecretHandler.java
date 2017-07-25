@@ -10,19 +10,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.secondbase.secrets.SecretHandler;
 import org.secondbase.secrets.SecretHandlerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Exchanges args on format secret:s3:bucket:key with the content of s3 url.
  */
 public final class S3SecretHandler implements SecretHandler {
 
-    private static final Logger LOG = Logger.getLogger(S3SecretHandler.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(S3SecretHandler.class);
     private static AWSCredentialsProvider awsCredentialsProvider;
 
     private final Pattern p = Pattern.compile(".*(secret:s3:(.+):(.+)).*");
@@ -46,7 +46,7 @@ public final class S3SecretHandler implements SecretHandler {
         for (int i = 0; i < args.length; i++) {
             final Optional<SecretPath> s3Path = getS3Path(args[i]);
             if (s3Path.isPresent()) {
-                LOG.log(Level.INFO, "Secret recognised: " + args[i]);
+                LOG.info("Secret recognised: " + args[i]);
                 try {
                     ret[i] = args[i].replaceAll(s3Path.get().replaceString, getS3Value(s3Path.get()));
                     continue;
@@ -78,7 +78,7 @@ public final class S3SecretHandler implements SecretHandler {
      * @throws AmazonS3Exception on problems communicating with amazon
      */
     private String getS3Value(final SecretPath s3path) throws IOException, AmazonS3Exception {
-        LOG.log(Level.INFO, "Fetching secret from s3://" + s3path.bucket + "/" + s3path.key);
+        LOG.info("Fetching secret from s3://" + s3path.bucket + "/" + s3path.key);
         if (s3Client == null) {
             if (awsCredentialsProvider != null) {
                 s3Client = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
@@ -95,7 +95,7 @@ public final class S3SecretHandler implements SecretHandler {
         while((line = reader.readLine()) != null) {
             b.append(line);
         }
-        LOG.log(Level.INFO, "Found secret");
+        LOG.info("Found secret");
         reader.close();
         return b.toString();
     }
