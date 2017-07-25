@@ -103,13 +103,15 @@ public final class SecondBaseLogger {
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.reset();
 
-        if (Strings.isNullOrEmpty(service)) {
-            throw new IllegalArgumentException("Service name is required");
+        if (!Strings.isNullOrEmpty(service)) {
+            loggerContext.putProperty(SERVICE, service);
         }
-
-        loggerContext.putProperty(DATACENTER, datacenter);
-        loggerContext.putProperty(ENVIRONMENT, environment);
-        loggerContext.putProperty(SERVICE, service);
+        if (!Strings.isNullOrEmpty(datacenter)) {
+            loggerContext.putProperty(DATACENTER, datacenter);
+        }
+        if (!Strings.isNullOrEmpty(environment)) {
+            loggerContext.putProperty(ENVIRONMENT, environment);
+        }
         return loggerContext;
     }
 
@@ -186,10 +188,19 @@ public final class SecondBaseLogger {
             final boolean serviceLog) {
         final PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
+        final StringBuilder sb = new StringBuilder();
+        if(loggerContext.getProperty(DATACENTER) != null) {
+            sb.append("%property{" + DATACENTER + "} ");
+        }
+        if(loggerContext.getProperty(ENVIRONMENT) != null) {
+            sb.append("%property{" + ENVIRONMENT + "} ");
+        }
+        if(loggerContext.getProperty(SERVICE) != null) {
+            sb.append("%property{" + SERVICE + "} ");
+        }
         final String logType = serviceLog ? "servicelog" : "requestlog";
         encoder.setPattern(
-                "%-5level " + "[%property{" + DATACENTER + "} " + "%property{" + ENVIRONMENT + "} "
-                        + "%property{" + SERVICE + "} " + logType + "] [%thread]: %message%n");
+                "%-5level " + "[" + sb.toString().trim() + " " + logType + "] [%thread]: %message%n");
         encoder.start();
 
         final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();

@@ -179,16 +179,4 @@ public class SecondBaseLoggerTest {
 
         assertThat(consoleAppender, notNullValue());
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionForEmptyServiceName() {
-        final String emptyServiceName = "";
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, emptyServiceName, DATACENTER, null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionForNullServiceName() {
-        final String nullServiceName = null;
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, nullServiceName, DATACENTER, null);
-    }
 }
