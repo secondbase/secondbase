@@ -1,6 +1,5 @@
 package org.secondbase.core;
 
-import java.io.IOException;
 import java.util.ServiceLoader;
 import org.secondbase.core.config.SecondBaseModule;
 import org.secondbase.core.moduleconnection.WebConsole;
@@ -55,28 +54,6 @@ public class SecondBase {
         for (final SecondBaseModule module : configurableModule) {
             module.init();
         }
-
-        if (webConsole != null) {
-            try {
-                webConsole.start();
-            } catch (final IOException e) {
-                throw new SecondBaseException("Could not start webconsole.", e);
-            }
-        }
-
-        // Shut down modules on kill command
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (webConsole != null) {
-                    try {
-                        webConsole.shutdown();
-                    } catch (final IOException e) {
-                        System.err.println("Could not shutdown webconsole: " + e.getMessage());
-                    }
-                }
-            }
-        });
     }
 
     /**

@@ -9,11 +9,10 @@ import java.net.InetSocketAddress;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
 import org.secondbase.core.SecondBase;
+import org.secondbase.core.SecondBaseException;
 import org.secondbase.core.config.SecondBaseModule;
 import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.webconsole.widget.Widget;
-
-import static org.secondbase.webconsole.WebConsoleConfiguration.port;
 
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
@@ -61,8 +60,22 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     }
 
     @Override
-    public void init() {
-        // nothing to initialise
+    public void init() throws SecondBaseException {
+        try {
+            start();
+        } catch (final IOException e) {
+            throw new SecondBaseException("Could not start webconsole.", e);
+        }
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                    try {
+                        shutdown();
+                    } catch (final IOException e) {
+                        System.err.println("Could not shutdown webconsole: " + e.getMessage());
+                    }
+            }
+        });
     }
 
     @Override

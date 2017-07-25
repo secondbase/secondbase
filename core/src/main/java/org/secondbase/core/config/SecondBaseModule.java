@@ -1,6 +1,7 @@
 package org.secondbase.core.config;
 
 import org.secondbase.core.SecondBase;
+import org.secondbase.core.SecondBaseException;
 
 /**
  * Interface SecondBase modules must implement. Enables loading of Flags and
@@ -17,6 +18,7 @@ public interface SecondBaseModule {
     /**
      * This method will be called after flags are parsed. Initialisation code
      * that depends on supplied flags should go here.
+     * @throws SecondBaseException if errors occur during initialisation
      */
-    void init();
+    void init() throws SecondBaseException;
 }

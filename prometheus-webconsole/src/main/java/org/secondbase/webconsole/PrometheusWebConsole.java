@@ -23,7 +23,7 @@ public final class PrometheusWebConsole implements SecondBaseModule, Widget {
 
     @Override
     public void init() {
-
+        // not used in this implementation
     }
 
     @Override
