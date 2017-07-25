@@ -17,6 +17,7 @@
         <module>secrets</module>
         <module>webconsole</module>
         <module>jsonlogging</module>
+        <module>prometheus-webconsole</module>
     </modules>
 
     <build>
@@ -61,10 +62,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-core</artifactId>
-          <version>2.8.47</version>
-          <scope>test</scope>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.8.47</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
