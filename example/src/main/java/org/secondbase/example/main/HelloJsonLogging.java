@@ -2,17 +2,14 @@ package org.secondbase.example.main;
 
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.SecondBaseException;
-import org.secondbase.flags.Flags;
+import org.secondbase.core.config.SecondBaseModule;
+import org.secondbase.logging.JsonLoggerModule;
 
 public final class HelloJsonLogging {
 
     public static void main(final String[] args) throws SecondBaseException {
-        final HelloJsonLogging helloJsonLogging = new HelloJsonLogging();
-        final String[] realArgs = new String[] {
-                "--service", "test",
-                "--datacenter", "dc1"
-        };
-        new SecondBase(realArgs, new Flags().loadOpts(helloJsonLogging));
+        final SecondBaseModule[] modules = new SecondBaseModule[] { new JsonLoggerModule() };
+        new SecondBase(args, modules);
 
         final org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(
                 HelloJsonLogging.class);

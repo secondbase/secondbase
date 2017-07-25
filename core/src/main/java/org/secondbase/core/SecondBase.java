@@ -1,8 +1,6 @@
 package org.secondbase.core;
 
-import java.util.ServiceLoader;
 import org.secondbase.core.config.SecondBaseModule;
-import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.flags.Flags;
 
 /**
@@ -10,36 +8,20 @@ import org.secondbase.flags.Flags;
  */
 public class SecondBase {
 
+
     private Flags flags;
-    private WebConsole webConsole;
 
-    private final ServiceLoader<SecondBaseModule> configurableModule
-            = ServiceLoader.load(SecondBaseModule.class);
-
-    /**
-     * Set up SecondBase with default values.
-     * @param args command line arguments
-     */
-    public SecondBase(final String[] args) throws SecondBaseException {
-        init(args, new Flags());
+    public SecondBase(final String[] args, final SecondBaseModule[] modules)
+            throws SecondBaseException{
+        this(args, modules, new Flags());
     }
 
-    /**
-     * Set up SecondBase.
-     * @param args command line arguments
-     * @param flags preloaded Flags class
-     */
-    public SecondBase(final String[] args, final Flags flags) throws SecondBaseException {
-        init(args, flags);
-    }
-
-    private void init(final String[] args, final Flags flags) throws SecondBaseException {
+    public SecondBase(final String[] args, final SecondBaseModule[] modules, final Flags flags)
+            throws SecondBaseException {
         this.flags = flags;
-
-        for (final SecondBaseModule module : configurableModule) {
+        for(final SecondBaseModule module : modules) {
             module.load(this);
         }
-
         flags.parse(args);
 
         if (flags.helpFlagged()) {
@@ -51,7 +33,7 @@ public class SecondBase {
             System.exit(0);
         }
 
-        for (final SecondBaseModule module : configurableModule) {
+        for (final SecondBaseModule module : modules) {
             module.init();
         }
     }
@@ -62,12 +44,5 @@ public class SecondBase {
      */
     public Flags getFlags() {
         return flags;
-    }
-
-    /**
-     * Set the webconsole implementation.
-     */
-    public void setWebConsole(final WebConsole webConsole) {
-        this.webConsole = webConsole;
     }
 }

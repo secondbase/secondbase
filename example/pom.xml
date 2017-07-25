@@ -28,5 +28,10 @@
             <artifactId>jsonlogging</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.secondbase</groupId>
+            <artifactId>webconsole</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
 </project>

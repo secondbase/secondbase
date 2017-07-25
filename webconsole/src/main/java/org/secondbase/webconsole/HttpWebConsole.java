@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.ServiceLoader;
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.SecondBaseException;
 import org.secondbase.core.config.SecondBaseModule;
@@ -22,8 +21,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpWebConsole.class);
     private final HttpServer server;
-
-    private final ServiceLoader<Widget> widgets = ServiceLoader.load(Widget.class);
+    private final Widget[] widgets;
 
     /**
      * Basic /healthz endpoint, returning 200 OK.
@@ -42,12 +40,22 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     }
 
     /**
-     * Set up the webconsole using port from {@link WebConsoleConfiguration}.
+     * Set up the webconsole without widgets using port from {@link WebConsoleConfiguration}.
      * @throws IOException if server can't start on a given port
      */
     public HttpWebConsole() throws IOException {
+        this(new Widget[]{});
+    }
+
+    /**
+     * Set up the webconsole with the given widgets.
+     * @param widgets to use
+     * @throws IOException if the server can't start on a given port
+     */
+    public HttpWebConsole(final Widget[] widgets) throws IOException {
         server = HttpServer.create();
         server.createContext("/healthz", new HealthzHandler());
+        this.widgets = widgets;
     }
 
     /**
@@ -57,7 +65,6 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
     @Override
     public void load(final SecondBase secondBase) {
         secondBase.getFlags().loadOpts(WebConsoleConfiguration.class);
-        secondBase.setWebConsole(this);
     }
 
     @Override

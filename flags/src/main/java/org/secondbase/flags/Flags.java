@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ServiceLoader;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import joptsimple.OptionParser;
@@ -93,9 +92,22 @@ public final class Flags {
     private final List<Object> objects = new ArrayList<>();
     private final List<Class<?>> classes = new ArrayList<>();
 
-    // Dynamically load secret handlers to avoid unwanted dependencies
-    private final ServiceLoader<SecretHandler> secretHandlers
-            = ServiceLoader.load(SecretHandler.class);
+    private final SecretHandler[] secretHandlers;
+
+    /**
+     * Standard constructor initialising a flags object without secret handlers.
+     */
+    public Flags() {
+     this(new SecretHandler[]{});
+    }
+
+    /**
+     * Initialise a flags object with the given secret handlers.
+     * @param secretHandlers to use
+     */
+    public Flags(final SecretHandler[] secretHandlers) {
+        this.secretHandlers = secretHandlers;
+    }
 
     /**
      * Load a class that contains Flag annotations.
