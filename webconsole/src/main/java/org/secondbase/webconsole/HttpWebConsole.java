@@ -84,7 +84,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
     @Override
     public void shutdown() throws IOException {
-        if (! WebConsoleConfiguration.enableWebConsole) {
+        if (WebConsoleConfiguration.port == 0) {
             return;
         }
         LOG.info("Shutting down webconsole.");
