@@ -11,7 +11,8 @@
     <name>secondbase parent project</name>
 
     <properties>
-      <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <jackson.version>2.7.4</jackson.version>
     </properties>
     <modules>
         <module>core</module>
@@ -21,6 +22,7 @@
         <module>webconsole</module>
         <module>jsonlogging</module>
         <module>prometheus-webconsole</module>
+        <module>consul</module>
     </modules>
 
     <build>
@@ -77,6 +79,37 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Consul needs 19.0. Logging uses 22.0 by default. Logging can work with 19.0. -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>19.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-guava</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>

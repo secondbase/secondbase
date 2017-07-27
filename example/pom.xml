@@ -30,8 +30,18 @@
         </dependency>
         <dependency>
             <groupId>org.secondbase</groupId>
+            <artifactId>consul</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.secondbase</groupId>
             <artifactId>webconsole</artifactId>
             <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.secondbase</groupId>
+            <artifactId>prometheus-webconsole</artifactId>
+            <version>${parent.version}</version>
         </dependency>
     </dependencies>
 </project>

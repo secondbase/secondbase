@@ -9,4 +9,8 @@ public class SecondBaseException extends Throwable {
     public SecondBaseException(final String s, final IOException e) {
         super(s, e);
     }
+
+    public SecondBaseException(final String s) {
+        super(s);
+    }
 }
