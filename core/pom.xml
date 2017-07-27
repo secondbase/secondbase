@@ -16,7 +16,7 @@
         <dependency>
             <groupId>org.secondbase</groupId>
             <artifactId>flags</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>
