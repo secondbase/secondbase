@@ -28,13 +28,12 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class SecondBaseLoggerTest {
 
-    private static final String ENVIRONMENT = "environment";
-    private static final String SERVICENAME = "service";
-    private static final String DATACENTER = "datacenter";
+    private static final String[] KEYS = new String[]  {"environment", "service", "datacenter"};
+    private static final String[] VALUES = new String[] {"environment", "service" ,"datacenter"};
 
     @Test
     public void contextShouldBeSetProperly() throws IOException {
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, SERVICENAME, DATACENTER, null);
+        SecondBaseLogger.setupLoggingStdoutOnly(KEYS, VALUES, null);
 
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         final Map<String, String> propertyMap = ImmutableMap.of(
@@ -50,7 +49,9 @@ public class SecondBaseLoggerTest {
                 LoggingEvent.class);
 
         final LoggerContext loggerContext = SecondBaseLogger.getLoggerContext(
-                "environment", "service", "datacenter");
+                new String[] {"environment", "service", "datacenter"},
+                new String[] {"environment", "service", "datacenter"}
+        );
         final Appender<ILoggingEvent> mockAppender = spy(
                 SecondBaseLogger.createJsonConsoleAppender(
                         SecondBaseLogger.SERVICE_CONSOLE_APPENDER, loggerContext, true));
@@ -89,7 +90,9 @@ public class SecondBaseLoggerTest {
                 LoggingEvent.class);
 
         final LoggerContext loggerContext = SecondBaseLogger.getLoggerContext(
-                "environment", "service", "datacenter");
+                new String[] {"environment", "service", "datacenter"},
+                new String[] {"environment", "service", "datacenter"}
+        );
         final Appender<ILoggingEvent> mockAppender = spy(
                 SecondBaseLogger.createPatternLayoutConsoleAppender(
                         SecondBaseLogger.SERVICE_CONSOLE_APPENDER, loggerContext, true));
@@ -125,8 +128,7 @@ public class SecondBaseLoggerTest {
     @Test
     public void shouldSetConsoleAppender() {
         final String nullRequestLoggerName = null;
-        SecondBaseLogger.setupLoggingStdoutOnly(
-                ENVIRONMENT, SERVICENAME, DATACENTER, nullRequestLoggerName);
+        SecondBaseLogger.setupLoggingStdoutOnly(KEYS, VALUES, nullRequestLoggerName);
         final ch.qos.logback.classic.Logger rootLogger
                 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
                         org.slf4j.Logger.ROOT_LOGGER_NAME);
@@ -139,7 +141,7 @@ public class SecondBaseLoggerTest {
     @Test
     public void shouldSetConsoleAppenderForServiceAndRequestLogs() {
         final String requestLoggerName = "requestlogger";
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, SERVICENAME, DATACENTER, requestLoggerName);
+        SecondBaseLogger.setupLoggingStdoutOnly(KEYS, VALUES, requestLoggerName);
         final ch.qos.logback.classic.Logger rootLogger
                 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
                         org.slf4j.Logger.ROOT_LOGGER_NAME);
@@ -158,7 +160,7 @@ public class SecondBaseLoggerTest {
 
     @Test
     public void shouldSetConsoleAndServiceAppenders() {
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, SERVICENAME, DATACENTER, null);
+        SecondBaseLogger.setupLoggingStdoutOnly(KEYS, VALUES, null);
         final ch.qos.logback.classic.Logger rootLogger
                 = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(
                             org.slf4j.Logger.ROOT_LOGGER_NAME);
@@ -171,12 +173,36 @@ public class SecondBaseLoggerTest {
     @Test
     public void shouldSetConsoleAndServiceLayoutAppenders() {
         final boolean json = false;
-        SecondBaseLogger.setupLoggingStdoutOnly(ENVIRONMENT, SERVICENAME, DATACENTER, null, json);
+        SecondBaseLogger.setupLoggingStdoutOnly(KEYS, VALUES, null, json);
         final ch.qos.logback.classic.Logger rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory
                 .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         final Appender<ILoggingEvent> consoleAppender = rootLogger
                 .getAppender("SERVICECONSOLEAPPENDER");
 
         assertThat(consoleAppender, notNullValue());
+    }
+
+    @Test
+    public void correctParametersShouldBeParsed() throws IOException {
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {"a"}, new String[] {"1"}), is(true));
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {"a,b"}, new String[] {"1,2"}), is(true));
+    }
+
+    @Test
+    public void incorrectParametersShouldNotBeParsed() throws IOException {
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {""}, new String[] {""}), is(false));
+        assertThat(SecondBaseLogger.parametersOk(
+                null, null), is(false));
+        assertThat(SecondBaseLogger.parametersOk(
+                null, new String[] {""}), is(false));
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {""}, null), is(false));
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {"a"}, new String[] {""}), is(false));
+        assertThat(SecondBaseLogger.parametersOk(
+                new String[] {"a", "b"}, new String[] {"1"}), is(false));
     }
 }

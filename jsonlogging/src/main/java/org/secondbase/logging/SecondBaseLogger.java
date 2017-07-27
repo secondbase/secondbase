@@ -8,6 +8,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import com.google.common.base.Strings;
+import java.util.Map;
+import java.util.Map.Entry;
 import net.logstash.logback.composite.ContextJsonProvider;
 import net.logstash.logback.composite.GlobalCustomFieldsJsonProvider;
 import net.logstash.logback.composite.loggingevent.ArgumentsJsonProvider;
@@ -24,10 +26,6 @@ import org.slf4j.LoggerFactory;
 
 public final class SecondBaseLogger {
 
-    private static final String DATACENTER = "datacenter";
-    private static final String ENVIRONMENT = "environment";
-    private static final String SERVICE = "service";
-
     private static final Level LOG_LEVEL = Level.INFO;
 
     // package-private for testing
@@ -39,40 +37,42 @@ public final class SecondBaseLogger {
 
     /**
      * Set up logback logging for service and request logs. We use only ONE appender here to write
-     * normal log lines to stdout for both types. However, the request logger is set up slightly
-     * differently. To guarantee that everything works as expected this method must be called with
-     * the fully qualified class name of the request logger that will be used in jetty.
-     * @param environment field to add to all log lines
-     * @param service field to add to all log lines
-     * @param datacenter field to add to all log lines
+     * normal log lines to stdout for both types. Logging context is set from the keys and values
+     * parameters. They must be corresponding in length and all elements must be non-null and
+     * non-empty. However, the request logger is set up slightly differently. To guarantee that
+     * everything works as expected this method must be called with the fully qualified class name
+     * of the request logger that will be used in jetty.
+     * @param keys to add to all log lines
+     * @param values to add to all log lines
      * @param requestLoggerName the request logger class name
      */
     public static void setupLoggingStdoutOnly(
-            final String environment,
-            final String service,
-            final String datacenter,
-            final String requestLoggerName) {
-        setupLoggingStdoutOnly(environment, service, datacenter, requestLoggerName, true);
+            final String[] keys, final String[] values, final String requestLoggerName) {
+        setupLoggingStdoutOnly(keys, values, requestLoggerName, true);
     }
 
     /**
      * Set up logback logging for service and request logs. We use only ONE appender here to write
-     * normal log lines to stdout for both types. However, the request logger is set up slightly
-     * differently. To guarantee that everything works as expected this method must be called with
-     * the fully qualified class name of the request logger that will be used in jetty.
-     * @param environment field to add to all log lines
-     * @param service field to add to all log lines
-     * @param datacenter field to add to all log lines
+     * normal log lines to stdout for both types. Logging context is set from the keys and values
+     * parameters. They must be corresponding in length and all elements must be non-null and
+     * non-empty. However, the request logger is set up slightly differently. To guarantee that
+     * everything works as expected this method must be called with the fully qualified class name
+     * of the request logger that will be used in jetty.
+     * @param keys to add to all log lines
+     * @param values to add to all log lines
      * @param requestLoggerName the request logger class name
      * @param json true for json output, false for plain test
      */
-    public static void setupLoggingStdoutOnly(
-            final String environment,
-            final String service,
-            final String datacenter,
+     public static void setupLoggingStdoutOnly(
+            final String[] keys,
+            final String[] values,
             final String requestLoggerName,
             final boolean json) {
-        final LoggerContext loggerContext = getLoggerContext(environment, service, datacenter);
+        if(!parametersOk(keys, values)) {
+            throw new IllegalArgumentException(
+                    "Context keys and/or values are not properly formatted.");
+        }
+        final LoggerContext loggerContext = getLoggerContext(keys, values);
         final Appender<ILoggingEvent> consoleAppender = json
                 ? createJsonConsoleAppender(SERVICE_CONSOLE_APPENDER, loggerContext, true)
                 : createPatternLayoutConsoleAppender(SERVICE_CONSOLE_APPENDER, loggerContext, true);
@@ -96,22 +96,38 @@ public final class SecondBaseLogger {
         }
     }
 
+    static boolean parametersOk(final String[] keys, final String[] values) {
+        if (keys == null || values == null) {
+            return false;
+        }
+        if (keys.length != values.length) {
+            return false;
+        }
+        for (final String key : keys) {
+            if (Strings.isNullOrEmpty(key)) {
+                return false;
+            }
+        }
+        for (final String value : values) {
+            if (Strings.isNullOrEmpty(value)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     static LoggerContext getLoggerContext(
-            final String environment,
-            final String service,
-            final String datacenter) {
+            final String[] keys,
+            final String[] values) {
         // specifically cast to logback version so we can add advanced stuff (i.e. properties)
         final LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         loggerContext.reset();
-
-        if (!Strings.isNullOrEmpty(service)) {
-            loggerContext.putProperty(SERVICE, service);
-        }
-        if (!Strings.isNullOrEmpty(datacenter)) {
-            loggerContext.putProperty(DATACENTER, datacenter);
-        }
-        if (!Strings.isNullOrEmpty(environment)) {
-            loggerContext.putProperty(ENVIRONMENT, environment);
+        for (int i = 0; i < keys.length; i++) {
+            final String key = keys[i];
+            final String value = values[i];
+            if (!Strings.isNullOrEmpty(key) && !Strings.isNullOrEmpty(value)) {
+                loggerContext.putProperty(key, value);
+            }
         }
         return loggerContext;
     }
@@ -190,18 +206,16 @@ public final class SecondBaseLogger {
         final PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(loggerContext);
         final StringBuilder sb = new StringBuilder();
-        if(loggerContext.getProperty(DATACENTER) != null) {
-            sb.append("%property{" + DATACENTER + "} ");
-        }
-        if(loggerContext.getProperty(ENVIRONMENT) != null) {
-            sb.append("%property{" + ENVIRONMENT + "} ");
-        }
-        if(loggerContext.getProperty(SERVICE) != null) {
-            sb.append("%property{" + SERVICE + "} ");
+        Map<String, String> copyOfPropertyMap = loggerContext.getCopyOfPropertyMap();
+        for(Entry<String, String> entry : copyOfPropertyMap.entrySet()) {
+            sb.append("%property{" + entry.getKey()+ "} ");
         }
         final String logType = serviceLog ? "servicelog" : "requestlog";
+        final String pattern = sb.toString().trim().length() == 0
+                ? ""
+                : sb.toString().trim() + " ";
         encoder.setPattern(
-                "%-5level " + "[" + sb.toString().trim() + " " + logType + "] "
+                "%-5level " + "[" + pattern + logType + "] "
                         + "[%thread]: %message%n");
         encoder.start();
 

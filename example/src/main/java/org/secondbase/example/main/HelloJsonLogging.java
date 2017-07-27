@@ -11,8 +11,9 @@ public final class HelloJsonLogging {
     }
 
     public static void main(final String[] args) throws SecondBaseException {
+        final String[] realArgs = new String[] {"--keys", "a,b", "--values", "1,2"};
         final SecondBaseModule[] modules = new SecondBaseModule[] {new JsonLoggerModule()};
-        new SecondBase(args, modules);
+        new SecondBase(realArgs, modules);
 
         final org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(
                 HelloJsonLogging.class);
