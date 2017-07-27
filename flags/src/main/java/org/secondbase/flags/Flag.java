@@ -20,20 +20,20 @@ public @interface Flag {
      * The name used in command line argument. e.g. "bar" in "java Foo --bar 1".
      * In this example, "bar" can not be defined twice as this could make
      * "--bar 1" set the wrong value.
-     * @return
+     * @return the name
      */
     String name();
 
     /**
      * A description of the field. Visible when running "--help".
-     * @return
+     * @return the description
      */
     String description() default "";
 
     /**
      * Defines if a field is required to be present in the String[] or not.
      * Overrides the default value.
-     * @return
+     * @return the default value
      */
     boolean required() default false;
 
@@ -46,7 +46,7 @@ public @interface Flag {
      * @Flag(name="option", options=SimpleEnum.class)
      * public static SimpleEnum option = SimpleEnum.OPTION1;
      *
-     * @return
+     * @return enum field
      */
     Class<? extends Enum<?>> options() default NoOption.class;
 }

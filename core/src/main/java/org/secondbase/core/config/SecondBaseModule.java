@@ -12,6 +12,7 @@ public interface SecondBaseModule {
     /**
      * Load a ConfigurableModule. Should load additional flags and handle other
      * initialisation.
+     * @param secondBase object to load flags into
      */
     void load(final SecondBase secondBase);
 

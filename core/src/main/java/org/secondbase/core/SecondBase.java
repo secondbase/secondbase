@@ -40,7 +40,7 @@ public class SecondBase {
 
     /**
      * Get Flags instance used by Base.
-     * @return Flags
+     * @return {@link Flags} object
      */
     public Flags getFlags() {
         return flags;

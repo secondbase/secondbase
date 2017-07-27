@@ -115,7 +115,7 @@ public final class Flags {
     /**
      * Load a class that contains Flag annotations.
      *
-     * @param c - the class to load options from.
+     * @param c - the class to load options from
      * @return this
      */
     public Flags loadOpts(final Class<?> c) {
@@ -287,7 +287,7 @@ public final class Flags {
 
     /**
      * Set the string to show when "--version" is used.
-     * @param versionString
+     * @param versionString the version string to set
      */
     public Flags setVersionString(final String versionString) {
         this.versionString = versionString;
@@ -296,7 +296,7 @@ public final class Flags {
 
     /**
      * Returns all arguments given to parse() that are not Flagged arguments.
-     * @return List<?> - list of all arguments given to parse() that are not Flagged arguments.
+     * @return List<?> - list of all arguments given to parse() that are not Flagged arguments
      */
     public List<?> getNonOptionArguments() {
         return nonOptionArguments;
@@ -369,7 +369,7 @@ public final class Flags {
 
     /**
      * Pass args through secret handling.
-     * @param args - Arguments passed from main method.
+     * @param args - Arguments passed from main method
      * @return this
      */
     public String[] fetchSecrets(final String[] args) {
@@ -383,7 +383,7 @@ public final class Flags {
     /**
      * Try to set the arguments from main method on the fields loaded by loadOpts(Class<?> c).
      *
-     * @param args - Arguments passed from main method.
+     * @param args - Arguments passed from main method
      * @return this
      */
     public Flags parse(final String[] args) {
@@ -534,8 +534,8 @@ public final class Flags {
      * the static method are called. The instance methods are ignored.
      *
      * @throws InvocationTargetException if the underlying post construct method throws an
-     * exception.
-     * @throws IllegalAccessException if there is no access to the method.
+     * exception
+     * @throws IllegalAccessException if there is no access to the method
      */
     private void callPostConstructMethods()
         throws InvocationTargetException, IllegalAccessException {
@@ -579,7 +579,7 @@ public final class Flags {
     /**
      * Prints the help to the specified output stream.
      *
-     * @param out the OutputStream we wish to print the help output to.
+     * @param out the OutputStream we wish to print the help output to
      */
     public void printHelp(final OutputStream out) {
         final PrintWriter w = new PrintWriter(out);
@@ -663,7 +663,7 @@ public final class Flags {
     /**
      * Prints the version to the specified output stream.
      *
-     * @param out the OutputStream we wish to print the version output to.
+     * @param out the OutputStream we wish to print the version output to
      */
     public void printVersion(final OutputStream out) {
         final PrintWriter w = new PrintWriter(out);
@@ -672,14 +672,14 @@ public final class Flags {
     }
 
     /**
-     * @return {@code true} if a "--help" flag was passed on the command line.
+     * @return {@code true} if a "--help" flag was passed on the command line
      */
     public boolean helpFlagged() {
         return optionSet.has(help);
     }
 
     /**
-     * @return {@code true} if a "--version" flag was passed on the command line.
+     * @return {@code true} if a "--version" flag was passed on the command line
      */
     public boolean versionFlagged() {
         return optionSet.has(version);
@@ -687,7 +687,7 @@ public final class Flags {
 
     /**
      *
-     * @return {@code true} if a "--properties-file" flag was passed on the command line.
+     * @return {@code true} if a "--properties-file" flag was passed on the command line
      */
     public boolean propertiesFlagged() {
         return optionSet.hasArgument(propertiesFile);
@@ -716,8 +716,8 @@ public final class Flags {
     /**
      * Get the field type of a Field instance.
      *
-     * @param field the field instance we want the type for.
-     * @return the type of the {@code field} in question.
+     * @param field the field instance we want the type for
+     * @return the type of the {@code field} in question
      */
     private static FieldType fieldTypeOf(final Field field, final Flag flag) {
         if (field.getType().isAssignableFrom(Long.TYPE)
@@ -749,7 +749,7 @@ public final class Flags {
 
     /**
      * Get all Flag instances parsed from class (via the loadOpts(Class<?> c) method) as a List.
-     * @return List containing Flag instances.
+     * @return list containing Flag instances
      */
     public List<Flag> getFlagsAsList() {
         final List<Flag> list = new ArrayList<>();

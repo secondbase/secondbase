@@ -34,7 +34,7 @@ public final class FlagsInstanced {
     public SimpleEnum option = SimpleEnum.OPTION1;
 
     /**
-     * Get the value of the private variable "integer"
+     * Get the value of the private variable "integer."
      */
     public int getValueForPrivateInteger() {
         return integer;
