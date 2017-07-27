@@ -28,17 +28,19 @@ public class HelloAll {
     public static void main(final String[] args) throws SecondBaseException, IOException {
 
         final String[] realArgs = {
+                // SecondBase settings
+                "--service-name=HelloAll",
+                "--service-environment=testing",
+
                 // Consul settings
                 "--consul-host=localhost:8500",
-                "--service-name=HelloAll",
                 "--service-port=8000",
-                "--service-environment=testing",
-                "--service-health-check-path=/healthz",
-                "--service-tags=tagone,tagtwo",
+                "--consul-health-check-path=/healthz",
+                "--consul-tags=tagone,tagtwo",
+
                 // Logging settings
-                "--service=HelloAll",
                 "--datacenter=local",
-                "--environment=testing",
+
                 // Webconsole settings
                 "--webconsole-port=8000"
         };

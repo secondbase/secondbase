@@ -18,37 +18,25 @@ public final class ConsulModuleConfiguration {
     public static String host = "localhost:8500";
 
     @Flag(
-            name = "service-name",
-            description = "Name of service to register in consul"
-    )
-    public static String serviceName = "";
-
-    @Flag(
             name = "service-port",
             description = "Port of service to register in consul"
     )
     public static int servicePort = 0;
 
     @Flag(
-            name = "service-environment",
-            description = "The environment the service runs in"
-    )
-    public static String environment = "testing";
-
-    @Flag(
-            name = "service-health-check-path",
+            name = "consul-health-check-path",
             description = "Http path for consul to run health check towards"
     )
     public static String healthCheckPath = "";
 
     @Flag(
-            name = "service-tags",
+            name = "consul-tags",
             description = "Comma separated list of tags to register with the service"
     )
     public static String tags = "";
 
     @Flag(
-            name = "service-health-check-interval",
+            name = "consul-health-check-interval",
             description = "Interval, in seconds, between health checks performed by consul"
     )
     public static long healthCheckIntervalSec = 29L;

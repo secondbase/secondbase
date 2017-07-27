@@ -38,46 +38,47 @@ public final class ConsulModule implements SecondBaseModule {
 
     @Override
     public void init() throws SecondBaseException {
-        if (ConsulModuleConfiguration.serviceName.isEmpty()) {
+        if (SecondBase.serviceName.isEmpty()) {
             LOG.info("No service name defined. Nothing to registering yet.");
             return;
         }
         if (ConsulModuleConfiguration.servicePort == 0) {
             LOG.error("Service port needs to be defined in order to register a service in consul.");
+            return;
         }
-        if (ConsulModuleConfiguration.environment.isEmpty()) {
+        if (SecondBase.environment.isEmpty()) {
             LOG.error("Environment needs to be defined in order to register a service in consul.");
+            return;
         }
         if (ConsulModuleConfiguration.healthCheckPath.isEmpty()) {
             LOG.error("Health check path needs to be defined in order to register a service in "
                     + "consul.");
+            return;
         }
         final String[] tags = (ConsulModuleConfiguration.tags.isEmpty())
                 ? new String[]{}
                 : ConsulModuleConfiguration.tags.split(",");
 
         registerServiceInConsul(
-                ConsulModuleConfiguration.serviceName,
+                SecondBase.serviceName,
                 ConsulModuleConfiguration.servicePort,
-                ConsulModuleConfiguration.environment,
+                SecondBase.environment,
                 ConsulModuleConfiguration.healthCheckPath,
                 ConsulModuleConfiguration.healthCheckIntervalSec,
                 tags);
     }
 
     /**
-     * Instantiate a ConsulModule based on consul-host Flag.
+     * Instantiate a ConsulModule.
      */
-    public ConsulModule() {
-        new ConsulModule(getConsulClient());
-    }
+    public ConsulModule() {}
 
     /**
      * Instantiate a ConsulModule.
      * @param consulClient custom {@link Consul} client
      */
     public ConsulModule(final Consul consulClient) {
-        ConsulModule.consulClient = consulClient;
+        this.consulClient = consulClient;
     }
 
     public Consul getConsulClient() {

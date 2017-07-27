@@ -1,6 +1,7 @@
 package org.secondbase.core;
 
 import org.secondbase.core.config.SecondBaseModule;
+import org.secondbase.flags.Flag;
 import org.secondbase.flags.Flags;
 
 /**
@@ -8,6 +9,17 @@ import org.secondbase.flags.Flags;
  */
 public class SecondBase {
 
+    @Flag(
+            name = "service-name",
+            description = "Name of service"
+    )
+    public static String serviceName = "";
+
+    @Flag(
+            name = "service-environment",
+            description = "The environment the service runs in"
+    )
+    public static String environment = "testing";
 
     private Flags flags;
 
@@ -16,9 +28,13 @@ public class SecondBase {
         this(args, modules, new Flags());
     }
 
-    public SecondBase(final String[] args, final SecondBaseModule[] modules, final Flags flags)
+    public SecondBase(
+            final String[] args,
+            final SecondBaseModule[] modules,
+            final Flags customFlags)
             throws SecondBaseException {
-        this.flags = flags;
+        flags = customFlags;
+        flags.loadOpts(SecondBase.class);
         for(final SecondBaseModule module : modules) {
             module.load(this);
         }

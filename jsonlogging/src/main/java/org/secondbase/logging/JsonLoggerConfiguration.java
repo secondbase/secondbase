@@ -8,18 +8,6 @@ public class JsonLoggerConfiguration {
     }
 
     @Flag(
-            name = "environment",
-            description = "The environment the service runs in (test|staging|production)."
-    )
-    public static String environment;
-
-    @Flag(
-            name = "service",
-            description = "The name of the service (testservice)."
-    )
-    public static String service;
-
-    @Flag(
             name = "datacenter",
             description = "The datacenter the service runs in (dc1|dc2)."
     )

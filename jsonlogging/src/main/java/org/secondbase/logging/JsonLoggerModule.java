@@ -20,13 +20,13 @@ public class JsonLoggerModule implements SecondBaseModule {
         SLF4JBridgeHandler.install();
         final List<String> keyList = new LinkedList<>();
         final List<String> valueList = new LinkedList<>();
-        if (!Strings.isNullOrEmpty(JsonLoggerConfiguration.service)) {
+        if (!Strings.isNullOrEmpty(SecondBase.serviceName)) {
             keyList.add("service");
-            valueList.add(JsonLoggerConfiguration.service);
+            valueList.add(SecondBase.serviceName);
         }
-        if (!Strings.isNullOrEmpty(JsonLoggerConfiguration.environment)) {
+        if (!Strings.isNullOrEmpty(SecondBase.environment)) {
             keyList.add("environment");
-            valueList.add(JsonLoggerConfiguration.environment);
+            valueList.add(SecondBase.environment);
         }
         if (!Strings.isNullOrEmpty(JsonLoggerConfiguration.datacenter)) {
             keyList.add("datacenter");
