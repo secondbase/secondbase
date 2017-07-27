@@ -48,7 +48,8 @@ public final class S3SecretHandler implements SecretHandler {
             if (s3Path.isPresent()) {
                 LOG.info("Secret recognised: " + args[i]);
                 try {
-                    ret[i] = args[i].replaceAll(s3Path.get().replaceString, getS3Value(s3Path.get()));
+                    ret[i] = args[i].replaceAll(
+                            s3Path.get().replaceString, getS3Value(s3Path.get()));
                     continue;
                 } catch (final IOException e) {
                     throw new SecretHandlerException("Could not fetch secret from: " + args[i], e);
@@ -65,7 +66,8 @@ public final class S3SecretHandler implements SecretHandler {
      *
      * @param awsCredentialsProvider the custom s3 client configuration
      */
-    public static void setS3CredentialsProvider(final AWSCredentialsProvider awsCredentialsProvider) {
+    public static void setS3CredentialsProvider(
+            final AWSCredentialsProvider awsCredentialsProvider) {
         S3SecretHandler.awsCredentialsProvider = awsCredentialsProvider;
     }
 
@@ -81,7 +83,8 @@ public final class S3SecretHandler implements SecretHandler {
         LOG.info("Fetching secret from s3://" + s3path.bucket + "/" + s3path.key);
         if (s3Client == null) {
             if (awsCredentialsProvider != null) {
-                s3Client = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
+                s3Client = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider)
+                        .build();
             } else {
                 s3Client = AmazonS3ClientBuilder.standard().build();
             }
@@ -108,8 +111,9 @@ public final class S3SecretHandler implements SecretHandler {
             return Optional.empty();
         }
         final Matcher m = p.matcher(path);
-        if (! m.matches())
+        if (!m.matches()) {
             return Optional.empty();
+        }
         return Optional.of(new SecretPath(m.group(2), m.group(3), m.group(1)));
     }
 }

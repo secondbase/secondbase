@@ -65,15 +65,18 @@ public final class Flags {
     private final OptionParser optionParser = new OptionParser();
 
     // Help option
-    private final OptionSpec<Void> HELP = optionParser
+    private final OptionSpec<Void> help = optionParser
             .accepts("help", "Show this help");
 
     // Version option
-    private final OptionSpec<Void> VERSION = optionParser
+    private final OptionSpec<Void> version = optionParser
         .accepts("version", "Show version");
 
-    private final OptionSpec<String> PROPERTIES_FILE = optionParser.accepts("properties-file",
-        "Load properties from a given file").withRequiredArg().ofType(String.class).withValuesSeparatedBy(';');
+    private final OptionSpec<String> propertiesFile = optionParser
+        .accepts("properties-file", "Load properties from a given file")
+        .withRequiredArg()
+        .ofType(String.class)
+        .withValuesSeparatedBy(';');
 
     // Version text
     private String versionString = "NA";
@@ -148,10 +151,12 @@ public final class Flags {
                 continue;
             }
 
-            // Flag fields must be static if you are initializing the flags through a Class instance.
-            if ( ! instanced && ! Modifier.isStatic(field.getModifiers())) {
-                throw new IllegalArgumentException("Field "+field.toGenericString()+" is not static. Flag fields " +
-                    "must be static when initializing through a Class instance.");
+            // Flag fields must be static if you are initializing the flags through a Class
+            // instance.
+            if (!instanced && !Modifier.isStatic(field.getModifiers())) {
+                throw new IllegalArgumentException(
+                    "Field " + field.toGenericString() + " is not static. Flag fields "
+                    + "must be static when initializing through a Class instance.");
             }
 
             final String name = flag.name();
@@ -246,7 +251,8 @@ public final class Flags {
                 final Class<? extends Enum<?>> enumClass = flag.options();
                 final Object[] enumConstants = enumClass.getEnumConstants();
                 if (enumConstants == null) {
-                    throw new IllegalArgumentException("Field "+field.toGenericString()+" is not an enum type.");
+                    throw new IllegalArgumentException(
+                        "Field " + field.toGenericString() + " is not an enum type.");
                 }
                 for (final Object object : enumConstants) {
                     addEnumOption(enumClass, object.toString());
@@ -272,7 +278,8 @@ public final class Flags {
 
             case UNKNOWN:
             default:
-                throw new IllegalArgumentException("Field "+field.toGenericString()+" is not of a supported type.");
+                throw new IllegalArgumentException(
+                    "Field " + field.toGenericString() + " is not of a supported type.");
             }
         }
         return this;
@@ -325,10 +332,12 @@ public final class Flags {
             final FieldType type,
             final Flag flag,
             final Field field,
-            final OptionSpec<?> option, Class<?> c)
+            final OptionSpec<?> option,
+            final Class<?> c)
             throws IllegalArgumentException {
         if (options.containsKey(flag.name())) {
-            throw new IllegalArgumentException("Flag named "+flag.name()+" is defined more than once.");
+            throw new IllegalArgumentException(
+                "Flag named " + flag.name() + " is defined more than once.");
         }
         options.put(flag.name(), new OptionHolder(type, flag, field, option, c));
     }
@@ -348,10 +357,12 @@ public final class Flags {
             final FieldType type,
             final Flag flag,
             final Field field,
-            final OptionSpec<?> option, Object c)
+            final OptionSpec<?> option,
+            final Object c)
             throws IllegalArgumentException {
         if (options.containsKey(flag.name())) {
-            throw new IllegalArgumentException("Flag named "+flag.name()+" is defined more than once.");
+            throw new IllegalArgumentException(
+                "Flag named " + flag.name() + " is defined more than once.");
         }
         options.put(flag.name(), new OptionHolder(type, flag, field, option, c));
     }
@@ -392,14 +403,16 @@ public final class Flags {
             return this;
         }
         if (propertiesFlagged()) {
-            final List<String> files = optionSet.valuesOf(PROPERTIES_FILE);
+            final List<String> files = optionSet.valuesOf(propertiesFile);
             final ArrayList<String> newArgs = new ArrayList<>();
             for (final String filename : files) {
                 final Properties props = new Properties();
                 try {
                     final FileInputStream stream = new FileInputStream(filename);
                     props.load(stream);
-                    for (final Enumeration<?> keys = props.propertyNames(); keys.hasMoreElements();) {
+                    for (
+                        final Enumeration<?> keys = props.propertyNames();
+                        keys.hasMoreElements();) {
                         final String flagName = (String) keys.nextElement();
                         if (optionSet.hasArgument(flagName)) {
                             //Properties contains something already set by commandline argument
@@ -408,7 +421,7 @@ public final class Flags {
                         }
                         newArgs.add("--" + flagName);
                         final String value = props.getProperty(flagName);
-                        if (value != null && ! value.isEmpty()) {
+                        if (value != null && !value.isEmpty()) {
                             newArgs.add(value);
                         }
                     }
@@ -469,16 +482,22 @@ public final class Flags {
                                 try {
                                     holder.getField().set(holder.getObjectSource(), value);
                                 } catch (final Exception e) {
-                                    throw new IllegalArgumentException("Option given is not a valid option. Valid options are: "+enumOptions.get(holder.flag.options()).toString()+".");
+                                    throw new IllegalArgumentException(
+                                        "Option given is not a valid option. Valid options are: "
+                                        + enumOptions.get(holder.flag.options()).toString()+".");
                                 }
                             } else {
                                 try {
                                     holder.getField().set(holder.getField().getClass(), value);
                                 } catch (final Exception e) {
-                                    throw new IllegalArgumentException("Option given is not a valid option. Valid options are: "+enumOptions.get(holder.flag.options()).toString()+".");
+                                    throw new IllegalArgumentException(
+                                        "Option given is not a valid option. Valid options are: "
+                                        + enumOptions.get(holder.flag.options()).toString()+".");
                                 }
                             }
                             break;
+                    default:
+                      break;
                     }
 
                     // No further action needed for this field.
@@ -487,10 +506,12 @@ public final class Flags {
 
                 // Check if flag that does not occur in command line was required.
                 if (holder.getFlag().required()) {
-                    throw new IllegalArgumentException("Required argument missing: " + holder.getFlag().name());
+                    throw new IllegalArgumentException(
+                        "Required argument missing: " + holder.getFlag().name());
                 }
             } catch (final IllegalAccessException e) {
-                throw new RuntimeException("Programming error, illegal access for " + holder.getField().toGenericString());
+                throw new RuntimeException(
+                    "Programming error, illegal access for " + holder.getField().toGenericString());
             }
         }
         try {
@@ -516,7 +537,8 @@ public final class Flags {
      * exception.
      * @throws IllegalAccessException if there is no access to the method.
      */
-    private void callPostConstructMethods() throws InvocationTargetException, IllegalAccessException {
+    private void callPostConstructMethods()
+        throws InvocationTargetException, IllegalAccessException {
         for (final Object o : objects) {
             for (final Method method : findPostConstructMethod(o.getClass(), true)) {
                 method.invoke(o);
@@ -592,8 +614,9 @@ public final class Flags {
             // than watching Pandas fuck.
             Collections.sort(holderList, new Comparator<OptionHolder>() {
                 @Override
-                public int compare(OptionHolder a, OptionHolder b) {
-                    return a.getFlag().name().toLowerCase().compareTo(b.getFlag().name().toLowerCase());
+                public int compare(final OptionHolder a, final OptionHolder b) {
+                    return a.getFlag().name().toLowerCase().compareTo(
+                        b.getFlag().name().toLowerCase());
                 }
             });
 
@@ -652,14 +675,14 @@ public final class Flags {
      * @return {@code true} if a "--help" flag was passed on the command line.
      */
     public boolean helpFlagged() {
-        return optionSet.has(HELP);
+        return optionSet.has(help);
     }
 
     /**
      * @return {@code true} if a "--version" flag was passed on the command line.
      */
     public boolean versionFlagged() {
-        return optionSet.has(VERSION);
+        return optionSet.has(version);
     }
 
     /**
@@ -667,7 +690,7 @@ public final class Flags {
      * @return {@code true} if a "--properties-file" flag was passed on the command line.
      */
     public boolean propertiesFlagged() {
-        return optionSet.hasArgument(PROPERTIES_FILE);
+        return optionSet.hasArgument(propertiesFile);
     }
 
     /**
@@ -678,7 +701,8 @@ public final class Flags {
     public void printFlags() {
         try {
             for (final OptionHolder holder : options.values()) {
-                System.out.println("Field: "+holder.getField().toGenericString()+"\nFlag: name:"+holder.getFlag().name()
+                System.out.println("Field: " + holder.getField().toGenericString()
+                        + "\nFlag: name:" + holder.getFlag().name()
                         +", description:"+holder.getFlag().description()+", type:"+holder.getType()
                         +", default:"+(holder.isInstanced()
                             ? holder.getField().get(holder.getObjectSource())
@@ -749,7 +773,7 @@ public final class Flags {
         private final Class<?> classSource;
         private final Object objectSource;
 
-        public OptionHolder(
+        OptionHolder(
                 final FieldType type,
                 final Flag flag,
                 final Field field,
@@ -763,7 +787,7 @@ public final class Flags {
             objectSource = null;
         }
 
-        public OptionHolder(
+        OptionHolder(
                 final FieldType type,
                 final Flag flag,
                 final Field field,

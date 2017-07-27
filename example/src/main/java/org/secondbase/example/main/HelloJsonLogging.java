@@ -7,8 +7,11 @@ import org.secondbase.logging.JsonLoggerModule;
 
 public final class HelloJsonLogging {
 
+    private HelloJsonLogging() {
+    }
+
     public static void main(final String[] args) throws SecondBaseException {
-        final SecondBaseModule[] modules = new SecondBaseModule[] { new JsonLoggerModule() };
+        final SecondBaseModule[] modules = new SecondBaseModule[] {new JsonLoggerModule()};
         new SecondBase(args, modules);
 
         final org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(

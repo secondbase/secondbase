@@ -78,7 +78,8 @@ public final class SecondBaseLogger {
                 : createPatternLayoutConsoleAppender(SERVICE_CONSOLE_APPENDER, loggerContext, true);
 
         // specifically cast to logback version so we set it up
-        final Logger rootLogger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        final Logger rootLogger = (Logger) LoggerFactory.getLogger(
+                org.slf4j.Logger.ROOT_LOGGER_NAME);
         rootLogger.addAppender(consoleAppender);
         rootLogger.setLevel(LOG_LEVEL);
 
@@ -200,7 +201,8 @@ public final class SecondBaseLogger {
         }
         final String logType = serviceLog ? "servicelog" : "requestlog";
         encoder.setPattern(
-                "%-5level " + "[" + sb.toString().trim() + " " + logType + "] [%thread]: %message%n");
+                "%-5level " + "[" + sb.toString().trim() + " " + logType + "] "
+                        + "[%thread]: %message%n");
         encoder.start();
 
         final ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();

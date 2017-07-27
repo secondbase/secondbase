@@ -78,8 +78,9 @@ public final class VaultSecretHandler implements SecretHandler {
             return Optional.empty();
         }
         final Matcher m = p.matcher(path);
-        if (! m.matches())
+        if (!m.matches()) {
             return Optional.empty();
+        }
         return Optional.of(new SecretPath(m.group(2), m.group(3), m.group(1)));
     }
 

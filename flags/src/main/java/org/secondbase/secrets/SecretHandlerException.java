@@ -1,7 +1,5 @@
 package org.secondbase.secrets;
 
-import java.io.IOException;
-
 /**
  * Thrown by SecretHandler when a secret could not be understood or fetched.
  */

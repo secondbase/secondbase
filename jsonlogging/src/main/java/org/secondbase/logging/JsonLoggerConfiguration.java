@@ -4,6 +4,9 @@ import org.secondbase.flags.Flag;
 
 public class JsonLoggerConfiguration {
 
+    private JsonLoggerConfiguration() {
+    }
+
     @Flag(
             name = "environment",
             description = "The environment the service runs in (test|staging|production)."

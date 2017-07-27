@@ -31,7 +31,7 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
 
         @Override
         public void handle(final HttpExchange t) throws IOException {
-            final byte [] response = healthyMsg.getBytes();
+            final byte[] response = healthyMsg.getBytes();
             t.sendResponseHeaders(200, response.length);
             final OutputStream os = t.getResponseBody();
             os.write(response);
