@@ -43,5 +43,10 @@
             <artifactId>prometheus-webconsole</artifactId>
             <version>${parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.secondbase</groupId>
+            <artifactId>consul-prometheus-widget</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
 </project>

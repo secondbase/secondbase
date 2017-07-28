@@ -23,6 +23,7 @@
         <module>jsonlogging</module>
         <module>prometheus-webconsole</module>
         <module>consul</module>
+        <module>consul-prometheus-widget</module>
     </modules>
 
     <build>
