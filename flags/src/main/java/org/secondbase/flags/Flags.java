@@ -95,7 +95,7 @@ public final class Flags {
     private final List<Object> objects = new ArrayList<>();
     private final List<Class<?>> classes = new ArrayList<>();
 
-    private final SecretHandler[] secretHandlers;
+    private SecretHandler[] secretHandlers;
 
     /**
      * Standard constructor initialising a flags object without secret handlers.

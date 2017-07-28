@@ -24,6 +24,7 @@
         <module>prometheus-webconsole</module>
         <module>consul</module>
         <module>consul-prometheus-widget</module>
+        <module>all</module>
     </modules>
 
     <build>
