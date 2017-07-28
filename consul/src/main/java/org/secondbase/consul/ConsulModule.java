@@ -29,7 +29,7 @@ public final class ConsulModule implements SecondBaseModule {
     static final DeregisterThread deregisterThread = new DeregisterThread();
     private static final AtomicBoolean isDeregisterThreadActive = new AtomicBoolean(false);
 
-    private static Consul consulClient;
+    private Consul consulClient;
 
     @Override
     public void load(final SecondBase secondBase) {
@@ -184,14 +184,14 @@ public final class ConsulModule implements SecondBaseModule {
                 consulCustomTags);
     }
 
-    private static Runnable createRegisterTask(
+    private Runnable createRegisterTask(
             final int webconsolePort,
             final Registration.RegCheck regCheck,
             final String serviceName,
             final String serviceId,
             final String... tags) {
         // Attempt to deregister cleanly on shutdown
-        deregisterThread.add(serviceId, consulClient.agentClient());
+        deregisterThread.add(serviceId, getConsulClient().agentClient());
         if (!isDeregisterThreadActive.get()) {
             Runtime.getRuntime().addShutdownHook(deregisterThread);
             isDeregisterThreadActive.set(true);
@@ -202,8 +202,8 @@ public final class ConsulModule implements SecondBaseModule {
                 + ". RegCheck: " + regCheck.toString());
         return () -> {
             try {
-                if (!consulClient.agentClient().isRegistered(serviceId)){
-                    consulClient.agentClient().register(
+                if (!getConsulClient().agentClient().isRegistered(serviceId)){
+                    getConsulClient().agentClient().register(
                             webconsolePort,
                             regCheck,
                             serviceName,
