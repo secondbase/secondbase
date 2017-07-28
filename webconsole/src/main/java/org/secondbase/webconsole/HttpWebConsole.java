@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 import org.secondbase.core.SecondBase;
 import org.secondbase.core.SecondBaseException;
 import org.secondbase.core.config.SecondBaseModule;
-import org.secondbase.core.moduleconnection.WebConsole;
 import org.secondbase.webconsole.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A webserver for hosting secondbase servlets using Sun's {@link HttpServer}.
  */
-public final class HttpWebConsole implements SecondBaseModule, WebConsole {
+public final class HttpWebConsole implements SecondBaseModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpWebConsole.class);
     private final HttpServer server;
@@ -86,7 +85,6 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
         });
     }
 
-    @Override
     public void start() throws IOException {
         if (WebConsoleConfiguration.port == 0) {
             return;
@@ -103,7 +101,6 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
         server.start();
     }
 
-    @Override
     public void shutdown() throws IOException {
         if (WebConsoleConfiguration.port == 0) {
             return;
@@ -112,7 +109,6 @@ public final class HttpWebConsole implements SecondBaseModule, WebConsole {
         server.stop(WebConsoleConfiguration.stopTimeout);
     }
 
-    @Override
     public int getPort() {
         return WebConsoleConfiguration.port;
     }
