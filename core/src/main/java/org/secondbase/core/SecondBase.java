@@ -23,17 +23,28 @@ public class SecondBase {
 
     private Flags flags;
 
+    /**
+     * Initiates SecondBase with a set of {@link SecondBaseModule}.
+     * @param args command line arguments to be parsed
+     * @throws SecondBaseException if a module fails to start
+     */
     public SecondBase(final String[] args, final SecondBaseModule[] modules)
             throws SecondBaseException{
         this(args, modules, new Flags());
     }
 
+    /**
+     * Initiates SecondBase with a set of {@link SecondBaseModule} and custom {@link Flags}.
+     * @param args command line arguments to be parsed
+     * @param flags preloaded {@link Flags}
+     * @throws SecondBaseException if a module fails to start
+     */
     public SecondBase(
             final String[] args,
             final SecondBaseModule[] modules,
-            final Flags customFlags)
+            final Flags flags)
             throws SecondBaseException {
-        flags = customFlags;
+        this.flags = flags;
         flags.loadOpts(SecondBase.class);
         for(final SecondBaseModule module : modules) {
             module.load(this);
