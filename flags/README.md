@@ -4,6 +4,15 @@ This is a library to help developers build neatly formatted and easy to understa
 
 Annotate variables to set them from command line arguments, or reference a location where Flags can get the variable from.
 
+# Maven dependency
+
+```xml
+<dependency>
+    <groupId>com.github.secondbase</groupId>
+    <artifactId>flags</artifactId>
+</dependency>
+```
+
 # Example
 
 This example can be run with the command **java HelloFlags --help** which will print the command line help, or **java HelloFlags --text "World"** which will print "Hello, World!".
@@ -97,6 +106,19 @@ the given location.
 
 Flags support fetching values from HashiCorp Vault using the vault-java-driver. To use the feature, first make sure Flags can connect to Vault. Vault will use configuration from environment variables. Refer to https://github.com/BetterCloud/vault-java-driver for more about the specific variables.
 
+```xml
+<dependency>
+    <groupId>com.github.secondbase</groupId>
+    <artifactId>secrets-vault</artifactId>
+</dependency>
+```
+```java
+new Flags(
+    new SecretHandler[]{
+        new S3SecretHandler()
+    });
+```
+
 Lets say a secret is written to Vault like this **vault write secret/foo text=Vault ttl=1y**, resulting in **vault read secret/foo**:
 ```
 Key                 Value
@@ -114,7 +136,18 @@ To make Flags find the value "Vault" and print "Hello, Vault!", start the exampl
 
 Flags support fetching values from S3 using the AWS Java SDK. To use the feature, first make sure Flags can connect to S3. The SDK will use credentials for accessing S3 in ~/.aws/credentials. Refer to http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files for more about the specific variables.
 
-## How the feature works:
+```xml
+<dependency>
+    <groupId>com.github.secondbase</groupId>
+    <artifactId>secrets-s3</artifactId>
+</dependency>
+```
+```java
+new Flags(
+    new SecretHandler[]{
+        new VaultSecretHandler()
+    });
+```
 
 First upload a file in S3 containing the value you want to to be set as the variable. Remember that newlines and such characters are treated as part of the value and will be put into the variable, so don't add newlines at the end of the file if you don't intend to have a newline in the variable.
 

@@ -1,4 +1,4 @@
-package org.secondbase.webconsole;
+package com.github.secondbase.webconsole;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
