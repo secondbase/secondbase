@@ -17,8 +17,6 @@
         <joda-time.version>2.3</joda-time.version>
         <logback.version>1.2.3</logback.version>
         <logstash-logback-encoder.version>4.9</logstash-logback-encoder.version>
-        <guava.version>22.0</guava.version>
-        <mockito.version>1.9.5</mockito.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
     </properties>
 
@@ -78,11 +76,6 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${joda-time.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

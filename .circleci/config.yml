@@ -30,56 +30,13 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # run tests!
       - run: mvn integration-test
 
-  build-and-deploy:
-    docker:
-      - image: circleci/openjdk:8-jdk
-
-    working_directory: ~/repo
-
-    environment:
-      MAVEN_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: mvn package dependency:go-offline
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      # run tests!
-      - run: mvn integration-test
-
-      - command: |
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+      # deploy if release branch
+      - run: |
+          if [[ $CIRCLE_BRANCH = 'release' ]]; then
+            echo $GPG_KEY | base64 --decode > signing-key
+            gpg --pinentry-mode loopback --passphrase $GPG_PASSPHRASE --import signing-key
+            shred signing-key
             mvn -s .circleci/settings.xml -DskipTests -DperformRelease deploy
           fi
-
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
-      - hold:
-          type: approval
-          filters:
-            branches:
-              only: release
-      - build-and-deploy:
-          filters:
-            branches:
-              only: release
-          requires:
-            - hold

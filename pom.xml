@@ -176,7 +176,7 @@
 
     <profiles>
         <profile>
-            <id>release-sign-artifacts</id>
+            <id>ossrh</id>
             <activation>
                 <property>
                     <name>performRelease</name>
@@ -184,6 +184,15 @@
                 </property>
             </activation>
             <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-deploy-plugin</artifactId>
+                            <version>2.8.2</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -225,6 +234,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -232,6 +242,13 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
                             </execution>
                         </executions>
                     </plugin>
