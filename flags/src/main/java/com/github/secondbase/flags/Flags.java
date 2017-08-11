@@ -388,7 +388,7 @@ public final class Flags {
      * @return this
      */
     public Flags parse(final String[] args) {
-        optionSet = optionParser.parse(fetchSecrets(args));
+        optionSet = optionParser.parse(args);
 
         //Store non option arguments
         nonOptionArguments = optionSet.nonOptionArguments();
@@ -403,6 +403,7 @@ public final class Flags {
         if (versionFlagged()) {
             return this;
         }
+        final String[] allArgs;
         if (propertiesFlagged()) {
             final List<String> files = optionSet.valuesOf(propertiesFile);
             final ArrayList<String> newArgs = new ArrayList<>();
@@ -433,8 +434,13 @@ public final class Flags {
                 }
             }
             Collections.addAll(newArgs, args);
-            optionSet = optionParser.parse(newArgs.toArray(new String[newArgs.size()]));
+            allArgs = newArgs.toArray(new String[newArgs.size()]);
+        } else {
+            allArgs = args;
         }
+
+        final String[] allArgsWithSecrets = fetchSecrets(allArgs);
+        optionSet = optionParser.parse(allArgsWithSecrets);
 
         for (final OptionHolder holder : options.values()) {
             try {
