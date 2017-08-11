@@ -1,5 +1,7 @@
 package com.github.secondbase.flags;
 
+import com.github.secondbase.secrets.SecretHandler;
+import com.github.secondbase.secrets.SecretHandlerException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -493,5 +495,56 @@ public class FlagsTest {
         final FlaggedTestClassThrowsException invalidMethod = new FlaggedTestClassThrowsException();
         expectedException.expectCause(isA(UnsupportedOperationException.class));
         new Flags().loadOpts(invalidMethod).parse(new String[0]);
+    }
+
+    @Test
+    public void testSecretArg() {
+        final String secretValue = "secretValue";
+
+        final SecretHandler secretHandler = args -> {
+            args[1] = secretValue;
+            return args;
+        };
+
+        final class TestFlags {
+            @Flag(name = "secret")
+            private String secret;
+        }
+
+        final TestFlags testFlags = new TestFlags();
+        new Flags(new SecretHandler[]{secretHandler})
+                .loadOpts(testFlags)
+                .parse(new String[]{"--secret", "valueToBeExchanged"});
+
+        assertEquals(secretValue, testFlags.secret);
+    }
+
+    @Test
+    public void testSecretInPropertiesFile() throws Exception {
+        final String secretValue = "secretValue";
+
+        final SecretHandler secretHandler = args -> {
+            args[1] = secretValue;
+            return args;
+        };
+
+        final class TestFlags {
+            @Flag(name = "secret")
+            private String secret;
+        }
+
+        final File propertiesFile = File.createTempFile("test", "properties");
+        propertiesFile.setWritable(true);
+        final FileOutputStream fio = new FileOutputStream(propertiesFile);
+        final String properties = "secret=valueToBeExchanged\n";
+        fio.write(properties.getBytes());
+        fio.close();
+
+        final TestFlags testFlags = new TestFlags();
+        new Flags(new SecretHandler[]{secretHandler})
+                .loadOpts(testFlags)
+                .parse(new String[]{"--properties-file", propertiesFile.getAbsolutePath()});
+
+        assertEquals(secretValue, testFlags.secret);
     }
 }

@@ -37,7 +37,7 @@ public class SecondBase {
      * Initiates {@link com.github.secondbase.core.SecondBase} with all {@link SecondBaseModule}
      * available.
      * @param args command line arguments to be parsed
-     * @param flags custom {@link Flags}. NB! Needs custom setup of {@link SecretHandler[]}
+     * @param flags custom {@link Flags}. NB! Needs custom setup of {@link SecretHandler}
      * @throws IOException if WebConsole fails to start
      * @throws SecondBaseException if {@link com.github.secondbase.core.SecondBase} fails to start
      */
