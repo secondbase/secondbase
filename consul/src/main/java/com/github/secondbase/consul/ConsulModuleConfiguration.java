@@ -40,4 +40,10 @@ public final class ConsulModuleConfiguration {
             description = "Interval, in seconds, between health checks performed by consul"
     )
     public static long healthCheckIntervalSec = 29L;
+
+    @Flag(
+            name = "enable-consul",
+            description = "Set to enable consul integration"
+    )
+    public static boolean enabled = false;
 }
