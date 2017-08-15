@@ -38,8 +38,12 @@ public final class ConsulModule implements SecondBaseModule {
 
     @Override
     public void init() throws SecondBaseException {
+        if (!ConsulModuleConfiguration.enabled) {
+            LOG.info("Consul disabled. Not registering.");
+            return;
+        }
         if (SecondBase.serviceName.isEmpty()) {
-            LOG.info("No service name defined. Nothing to registering yet.");
+            LOG.info("No service name defined. Nothing to register yet.");
             return;
         }
         if (ConsulModuleConfiguration.servicePort == 0) {

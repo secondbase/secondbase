@@ -63,6 +63,7 @@ public class HelloAll {
                 "--service-environment=testing",
 
                 // Consul settings (register HelloAll service)
+                "--enable-consul",
                 "--consul-host=localhost:8500",
                 "--service-port=8000",
                 "--consul-health-check-path=/healthcheck",
