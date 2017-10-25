@@ -61,7 +61,7 @@ public final class MyService {
 }
 ```
 
-This [Java application](example/src/main/java/org/secondbase/example/main/HelloAll.java) shows an
+This [Java application](example/src/main/java/com/github/secondbase/example/main/HelloAll.java) shows an
 example http service running SecondBase configured manually with all modules activated. The
 [pom.xml](example/pom.xml) file shows all the dependencies needed.
 
@@ -83,12 +83,12 @@ Below is the list of modules which can be used.
 # Examples
 
 * Basic use of SecondBase with only Flags:
-[HelloSecondBase](example/src/main/java/org/secondbase/example/main/HelloSecondBase.java)
+[HelloSecondBase](example/src/main/java/com/github/secondbase/example/main/HelloSecondBase.java)
 * Using every module available:
-[HelloAll](example/src/main/java/org/secondbase/example/main/HelloAll.java)
+[HelloAll](example/src/main/java/com/github/secondbase/example/main/HelloAll.java)
 * Registering a service with Consul:
-[HelloConsul](example/src/main/java/org/secondbase/example/main/HelloConsul.java)
+[HelloConsul](example/src/main/java/com/github/secondbase/example/main/HelloConsul.java)
 * Parsing command line arguments through Flags:
-[HelloFlags](example/src/main/java/org/secondbase/example/main/HelloFlags.java)
+[HelloFlags](example/src/main/java/com/github/secondbase/example/main/HelloFlags.java)
 * Setting up and using json logging:
-[HelloJsonLogging](example/src/main/java/org/secondbase/example/main/HelloJsonLogging.java)
+[HelloJsonLogging](example/src/main/java/com/github/secondbase/example/main/HelloJsonLogging.java)
