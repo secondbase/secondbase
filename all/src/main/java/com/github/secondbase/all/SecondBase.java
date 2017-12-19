@@ -1,5 +1,6 @@
 package com.github.secondbase.all;
 
+import com.github.secondbase.consul.registration.ConsulRegistrationMetricsWebConsole;
 import java.io.IOException;
 import com.github.secondbase.consul.ConsulModule;
 import com.github.secondbase.core.SecondBaseException;
@@ -45,14 +46,23 @@ public class SecondBase {
             final String[] args,
             final Flags flags)
             throws IOException, SecondBaseException {
+
         final SecondBaseModule jsonLogger = new JsonLoggerModule();
 
-        final Widget prometheusWidget = new PrometheusWebConsole();
+        final PrometheusWebConsole prometheusWidget = new PrometheusWebConsole();
         final Widget[] widgets = {prometheusWidget};
+        final HttpWebConsole webConsole = new HttpWebConsole(widgets);
 
         final ConsulModule consul = new ConsulModule();
-        final SecondBaseModule webconsole = new HttpWebConsole(widgets);
-        final SecondBaseModule[] modules = {consul, webconsole, jsonLogger};
+        final ConsulRegistrationMetricsWebConsole registerMetrics
+                = new ConsulRegistrationMetricsWebConsole(webConsole, consul);
+
+        final SecondBaseModule[] modules = {
+                jsonLogger, // Put jsonLogger first, since it can define how the other modules log.
+                consul,
+                prometheusWidget,
+                webConsole,
+                registerMetrics};
 
         new com.github.secondbase.core.SecondBase(args, modules, flags);
 
